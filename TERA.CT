@@ -1,0 +1,4427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="31">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>962</ID>
+      <Description>"Bypass Integrity check"</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+define(CRC1StartAddress,0312738E) //Address to replace
+
+alloc(CRC1Copy,$2048)
+CRC1Copy:
+readmem(CRC1StartAddress, 2048)
+
+aobscanmodule(CRC2,TERA.exe,8B 00 81 F3 01 00 00 00) //Replace this
+registersymbol(CRC2)
+alloc(newmem,$30)
+
+label(code)
+label(return)
+
+newmem:
+//Also replace the register with the same register in the original memory
+  sub eax, CRC1StartAddress
+  add eax, CRC1Copy
+code:
+  mov eax,[eax]
+  xor ebx,00000001
+  jmp return
+
+CRC2:
+//Make sure there are the correct amount of nops here.
+  jmp newmem
+  nop 3
+return:
+
+////////////////////////////////////////////////////////////////////
+aobscanmodule(CRC1,TERA.exe,5B 83 C4 04 C3) //Replace this
+registersymbol(CRC1)
+alloc(CRC1NewCode,$30)
+
+label(codeAaA)
+label(returnAaA)
+
+CRC1NewCode:
+codeAaA:
+  pop ebx
+  add esp,04
+  mov eax,#1
+  ret
+  jmp returnAaA
+
+CRC1:
+//Make sure there are no nops here
+  jmp CRC1NewCode
+returnAaA:
+
+
+[DISABLE]
+
+CRC1:
+  db 5B 83 C4 04 C3
+unregistersymbol(CRC1)
+dealloc(CRC1NewCode)
+
+CRC2:
+  db 8B 00 81 F3 01 00 00 00
+unregistersymbol(CRC2)
+dealloc(newmem)
+
+
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>969</ID>
+      <Description>"Hacks"</Description>
+      <Options moHideChildren="1"/>
+      <LastState Value="" Activated="1" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>1827</ID>
+          <Description>".Master script (global)"</Description>
+          <LastState Activated="1"/>
+          <Color>0000FF</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[ENABLE]
+globalalloc(Globalmemory,2000)
+
+define(Math,Globalmemory) //Used to make quick calculations (Math 40)
+registerSymbol(Math)
+
+define(GameFocus,Globalmemory+40) //Need a few bytes, 8 is enough
+registerSymbol(GameFocus)
+
+define(WC_backup,Globalmemory+48) //Need at least 10
+registerSymbol(WC_backup)
+
+define(WC_newmem,Globalmemory+58) //Need at least 10
+registerSymbol(WC_newmem)
+
+define(Location,Globalmemory+70) //Need at least 50
+registerSymbol(Location)
+
+define(newmemAltPly,Globalmemory+120) //Need at least 50 (maybe 100)
+registerSymbol(newmemAltPly)
+
+define(_OnFoot,Globalmemory+228) //Need a few bytes, 8 is enough
+registerSymbol(_OnFoot)
+
+define(newmemFoot,Globalmemory+268) //40
+registerSymbol(newmemFoot)
+
+define(IsGathering,Globalmemory+308) //8
+registerSymbol(IsGathering)
+
+define(newmem_gathering,Globalmemory+316) //40
+registerSymbol(newmem_gathering)
+
+define(IsPlayerAutoMoving,Globalmemory+356) //8
+registerSymbol(IsPlayerAutoMoving)
+
+define(AutoMoveGoto,Globalmemory+364) //20
+registerSymbol(AutoMoveGoto)
+
+define(AutoMoveTimer,Globalmemory+384) //20
+registerSymbol(AutoMoveTimer)
+
+define(newmemAutoMovingMem,Globalmemory+404) //40=too low (100)
+registerSymbol(newmemAutoMovingMem)
+
+define(inCombat,Globalmemory+504) //8=too low 20
+registerSymbol(inCombat)
+
+define(newmem_combat,Globalmemory+524) //40
+registerSymbol(newmem_combat)
+
+define(ContinentID,Globalmemory+564) //8
+registerSymbol(ContinentID)
+
+define(newmemLastTp,Globalmemory+572) //40
+registerSymbol(newmemLastTp)
+
+define(IsFishing,Globalmemory+612) //8
+registerSymbol(IsFishing)
+
+define(newmem_AutoFish,Globalmemory+620) //40
+registerSymbol(newmem_AutoFish)
+
+define(newmem_AutoFishingAA,Globalmemory+660) //40
+registerSymbol(newmem_AutoFishingAA)
+
+define(newmem_AutoFishingAA,Globalmemory+660) //40
+registerSymbol(newmem_AutoFishingAA)
+
+//Auto keys
+define(KeyboardEvents,Globalmemory+700) //300
+registerSymbol(KeyboardEvents)
+
+define(_ScriptEnabled,Globalmemory+1000) //8
+registerSymbol(_ScriptEnabled)
+
+define(_Plugin,Globalmemory+1008) //8
+registerSymbol(_Plugin)
+
+define(_Running,Globalmemory+1016) //8
+registerSymbol(_Running)
+
+define(_InputKey,Globalmemory+1024) //8
+registerSymbol(_InputKey)
+
+
+
+
+
+
+aobscanmodule(Fix,TERA.exe,74 ?? 8B ?? ??  35 ???????? 89 ?? ??  8B ?? ??  35 ???????? 89 ?? ??  8B ??  F3 ???? ?? ??  35 ???????? F3)
+registersymbol(Fix)
+Fix:
+  db 74 00
+aobscanmodule(TeleportScan,Tera.exe,F3 ?? ?? ?? ?? A3 ?? ?? ?? ?? 8B 45 F0 F3 0F 11 45 F4 A3 ?? ?? ?? ?? 8B 45 F4 A3 ?? ?? ?? 02 B8 ?? ?? ?? ?? 5E 8B E5 5D C3)
+registersymbol(TeleportScan)
+aobscanmodule(PlayerX,Tera.exe,A3 ?? ?? ?? ?? 8B 45 F0 F3 0F 11 45 F4 A3 ?? ?? ?? ?? 8B 45 F4 A3 ?? ?? ?? 02 B8 ?? ?? ?? ?? 5E 8B E5 5D C3)
+registersymbol(PlayerX)
+aobscanmodule(PlayerY,Tera.exe,A3 ?? ?? ?? 02 B8 ?? ?? ?? ?? 5E 8B E5 5D C3)
+registersymbol(PlayerY)
+aobscanmodule(PlayerZ,Tera.exe,A3 ?? ?? ?? ?? 8B 45 F4 A3 ?? ?? ?? 02 B8 ?? ?? ?? ?? 5E 8B E5 5D C3)
+registersymbol(PlayerZ)
+aobscanmodule(Magnet,TERA.exe,89 41 54 8B 43 04)
+registersymbol(Magnet)
+aobscanmodule(Magnet2,TERA.exe,89 41 5C 8B 7E)
+registersymbol(Magnet2)
+aobscanmodule(WindowCheck,TERA.exe,A3 ???????? FF ?? ??  FF ?? ????????  5F  5E  5B  8B ??  5D  C2 ???? 5F  5E  C7 ?? ?? ???????? 33 ??  5B  8B ??  5D  C2 ????)
+registersymbol(WindowCheck)
+aobscanmodule(gatheringinfo,TERA.exe,89 86 C4 00 00 00 8B 7E)
+registersymbol(gatheringinfo)
+
+//Window Check backup
+GameFocus:
+dd #0
+
+WC_backup:
+readmem(WindowCheck,5)
+
+WC_newmem:
+readmem(WindowCheck,5)
+mov [GameFocus],eax
+jmp WindowCheck+5
+
+WindowCheck:
+jmp WC_newmem
+
+//Allocate memory for player coordinates
+label(_PlyX)
+label(_PlyY)
+label(_PlyZ)
+label(Float)
+label(Distance)
+label(Xplus)
+label(Yplus)
+label(Zplus)
+label(Xminus)
+label(Yminus)
+label(Zminus)
+
+registersymbol(_PlyX)
+registersymbol(_PlyY)
+registersymbol(_PlyZ)
+registersymbol(Float)
+registersymbol(Xplus)
+registersymbol(Yplus)
+registersymbol(Zplus)
+registersymbol(Xminus)
+registersymbol(Yminus)
+registersymbol(Zminus)
+registersymbol(Distance)
+
+Location:
+_PlyX:
+dd (float)0
+_PlyY:
+dd (float)0
+_PlyZ:
+dd (float)0
+Float:
+dd (float)100
+Distance:
+dd (float)120
+Xplus:
+dd (float)0
+Yplus:
+dd (float)0
+Zplus:
+dd (float)0
+Xminus:
+dd (float)0
+Yminus:
+dd (float)0
+Zminus:
+dd (float)0
+
+//Player coord finder
+aobscanmodule(AltPly,TERA.exe,8B 41 04 89 44 32 08) // should be unique
+registersymbol(AltPly)
+label(codeAlt)
+label(returnAlt)
+
+//Extra labels
+newmemAltPly:
+codeAlt:
+push rbx
+mov rbx,[ecx]
+mov [_PlyX],rbx //Copy X coord to _PlyX
+mov rbx,[ecx+04]
+mov [_PlyZ],rbx //Copy Z coord to _PlyZ
+mov rbx,[ecx+08]
+mov [_PlyY],rbx //Copy Y coord to _PlyY
+pop rbx
+  mov eax,[ecx+04]
+  mov [edx+esi+08],eax
+
+pushf
+movss xmm2,[_PlyX]
+addss xmm2,[Distance]
+movss [Xplus],xmm2
+movss xmm2,[_PlyZ]
+addss xmm2,[Distance]
+movss [Zplus],xmm2
+movss xmm2,[_PlyY]
+addss xmm2,[Distance]
+movss [Yplus],xmm2
+popf
+
+pushf
+movss xmm2,[_PlyX]
+subss xmm2,[Distance]
+movss [Xminus],xmm2
+movss xmm2,[_PlyZ]
+subss xmm2,[Distance]
+movss [Zminus],xmm2
+movss xmm2,[_PlyY]
+subss xmm2,[Distance]
+movss [Yminus],xmm2
+popf
+
+  jmp returnAlt
+
+AltPly:
+  jmp newmemAltPly
+  nop
+  nop
+returnAlt:
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+_OnFoot:
+dd #1
+
+aobscanmodule(OnFoot,TERA.exe,8B F1 83 7E 14 00 74 1A) // should be unique
+registersymbol(OnFoot)
+
+label(codeFoot)
+label(returnFoot)
+
+newmemFoot:
+codeFoot:
+  mov esi,ecx
+  push rbx
+  mov rbx,[esi+14]
+  mov [_OnFoot],rbx
+  pop rbx
+  cmp dword ptr [esi+14],00
+  jmp returnFoot
+
+OnFoot:
+  jmp newmemFoot
+  nop
+returnFoot:
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+IsGathering:
+dd #0
+
+label(code_gathering)
+label(return_gathering)
+
+newmem_gathering:
+code_gathering:
+  mov [esi+000000C4],eax
+  mov [IsGathering],eax
+  jmp return_gathering
+
+gatheringinfo:
+  jmp newmem_gathering
+  nop
+return_gathering:
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+IsPlayerAutoMoving:
+dd #0
+AutoMoveGoto:
+dd (float)0
+
+aobscanmodule(IsPlayerAutoMovingMem,TERA.exe,8B 07 C7 46 08 00 00 00 00 48)
+registersymbol(IsPlayerAutoMovingMem)
+
+label(codeAutoMovingMem)
+label(returnAutoMovingMem)
+label(skipAutoMovingMem)
+label(resetTimer_AutoMove)
+
+newmemAutoMovingMem:
+cmp [AutoMoveTimer],#1
+jge resetTimer_AutoMove
+
+//Pos 0 check
+cmp [AutoMoveGoto],(float)0
+je skipAutoMovingMem
+cmp [AutoMoveGoto+4],(float)0
+je skipAutoMovingMem
+cmp [AutoMoveGoto+8],(float)0
+je skipAutoMovingMem
+
+cmp [IsPlayerAutoMoving],#1
+je skipAutoMovingMem
+codeAutoMovingMem:
+
+
+mov ecx,[AutoMoveGoto] //X
+mov [edi+4],ecx
+mov ecx,[AutoMoveGoto+4] //Z
+mov [edi+8],ecx
+mov ecx,[AutoMoveGoto+8] //Y
+mov [edi+C],ecx
+
+mov [edi],#1
+  mov eax,[edi]
+  mov [IsPlayerAutoMoving],eax
+  mov [esi+08],00000000
+inc [AutoMoveTimer]
+  jmp returnAutoMovingMem
+
+skipAutoMovingMem:
+  mov eax,[edi]
+  mov [IsPlayerAutoMoving],eax
+  mov [esi+08],00000000
+  jmp returnAutoMovingMem
+
+resetTimer_AutoMove:
+mov [AutoMoveTimer],#0
+mov [AutoMoveGoto],#0
+mov [AutoMoveGoto+4],#0
+mov [AutoMoveGoto+8],#0
+  mov eax,[edi]
+  mov [IsPlayerAutoMoving],eax
+  mov [esi+08],00000000
+  jmp returnAutoMovingMem
+
+IsPlayerAutoMovingMem:
+  jmp newmemAutoMovingMem
+  nop 4
+returnAutoMovingMem:
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+aobscanmodule(CombatCheck,TERA.exe,89 41 0C 85 C0 75) // should be unique
+registersymbol(CombatCheck)
+inCombat:
+dd #0
+
+label(code_combat)
+label(return_combat)
+
+newmem_combat:
+
+code_combat:
+  mov [inCombat],eax
+  mov [ecx+0C],eax
+  test eax,eax
+  jmp return_combat
+
+CombatCheck:
+  jmp newmem_combat
+return_combat:
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+ContinentID:
+dd #0
+
+aobscanmodule(LastTp,TERA.exe,45 08 89 41 04 8B 02) // should be unique
+registersymbol(LastTp)
+label(codeLastTp)
+label(returnLastTp)
+newmemLastTp:
+codeLastTp:
+  mov [ContinentID],eax
+  mov [ecx+04],eax
+  mov eax,[edx]
+  jmp returnLastTp
+LastTp+02:
+  jmp newmemLastTp
+returnLastTp:
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+IsFishing:
+dd #0
+
+aobscanmodule(kfghdskjf,TERA.exe,C7 47 28 01 00 00 00 5B)
+registersymbol(kfghdskjf)
+
+label(code_AutoFish)
+label(return_AutoFish)
+newmem_AutoFish:
+code_AutoFish:
+  mov [edi+28],00000001
+  push rbx
+  mov rbx,[edi+28]
+  mov [IsFishing],rbx
+  pop rbx
+  jmp return_AutoFish
+kfghdskjf:
+  jmp newmem_AutoFish
+  nop 2
+return_AutoFish:
+///////////////////////////
+aobscanmodule(skdfhkdsjfds,TERA.exe,C7 46 28 00 00 00 00 85 DB)
+registersymbol(skdfhkdsjfds)
+label(code_AutoFishingAA)
+label(return_AutoFishingAA)
+newmem_AutoFishingAA:
+//Filter out majority
+{push rbx
+lea rbx,[esi]
+cmp rbx,F0000000
+pop rbx
+jb code_AutoFishingAA //}
+//Filter out others
+cmp [esi+18],#0
+je code_AutoFishingAA
+
+  mov [esi+28],00000000
+  push rbx
+  mov rbx,[esi+28]
+  mov [IsFishing],rbx
+  pop rbx
+code_AutoFishingAA:
+  mov [esi+28],00000000
+  jmp return_AutoFishingAA
+skdfhkdsjfds:
+  jmp newmem_AutoFishingAA
+  nop 2
+return_AutoFishingAA:
+[DISABLE]
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+unregistersymbol(Math)
+// Grab coords
+AltPly:
+  db 8B 41 04 89 44 32 08
+
+// Fix
+Fix:
+  db 74 46
+unregistersymbol(Fix)
+
+//On foot
+OnFoot:
+  db 8B F1 83 7E 14 00
+unregistersymbol(OnFoot)
+unregistersymbol(_OnFoot)
+
+//WindowsCheck
+WindowCheck:
+readmem(WC_backup,5)
+unregistersymbol(WC_newmem)
+unregistersymbol(WC_backup)
+unregistersymbol(GameFocus)
+unregistersymbol(WindowCheck)
+
+//Gathering restore
+unregistersymbol(IsGathering)
+gatheringinfo:
+  db 89 86 C4 00 00 00
+unregistersymbol(gatheringinfo)
+
+//Automoving check
+IsPlayerAutoMovingMem:
+  db 8B 07 C7 46 08 00 00 00 00
+unregistersymbol(IsPlayerAutoMovingMem)
+unregistersymbol(IsPlayerAutoMoving)
+unregistersymbol(AutoMoveGoto)
+//In combat check
+CombatCheck:
+  db 89 41 0C 85 C0
+unregistersymbol(CombatCheck)
+unregistersymbol(inCombat)
+
+//Continent id
+LastTp+02:
+  db 89 41 04 8B 02
+unregistersymbol(LastTp)
+unregistersymbol(ContinentID)
+
+//IsFishing
+kfghdskjf:
+  db C7 47 28 01 00 00 00
+unregistersymbol(kfghdskjf)
+
+skdfhkdsjfds:
+  db C7 46 28 00 00 00 00
+unregistersymbol(skdfhkdsjfds)
+unregistersymbol(IsFishing)
+
+dealloc(Globalmemory)
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>978</ID>
+          <Description>"Hacks"</Description>
+          <Options moHideChildren="1"/>
+          <LastState Value="" Activated="1" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>494</ID>
+              <Description>".X Position"</Description>
+              <LastState Value="45530.84766" RealAddress="0E6E0070"/>
+              <VariableType>Float</VariableType>
+              <Address>_PlyX</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>471</ID>
+              <Description>".Y Position"</Description>
+              <LastState Value="292.5114441" RealAddress="0E6E0074"/>
+              <VariableType>Float</VariableType>
+              <Address>_PlyY</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>495</ID>
+              <Description>".Z Position"</Description>
+              <LastState Value="-1104.598389" RealAddress="0E6E0078"/>
+              <VariableType>Float</VariableType>
+              <Address>_PlyZ</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1466</ID>
+              <Description>"Properties"</Description>
+              <Options moHideChildren="1"/>
+              <LastState Value="" RealAddress="00000000"/>
+              <Color>008000</Color>
+              <GroupHeader>1</GroupHeader>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>1447</ID>
+                  <Description>"OnFoot"</Description>
+                  <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:No
+1:Yes
+</DropDownList>
+                  <LastState Value="1" RealAddress="0E6E0228"/>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>_OnFoot</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1446</ID>
+                  <Description>"IsGathering"</Description>
+                  <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:No
+1:Yes
+</DropDownList>
+                  <LastState Value="0" RealAddress="0E6E0308"/>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>IsGathering</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1523</ID>
+                  <Description>"IsPlayerAutoMoving"</Description>
+                  <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:No
+1:Yes
+</DropDownList>
+                  <LastState Value="0" RealAddress="0E6E0356"/>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>IsPlayerAutoMoving</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1711</ID>
+                  <Description>"IsFishing"</Description>
+                  <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:Not fishing
+1:Fishing
+</DropDownList>
+                  <LastState Value="0" RealAddress="0E6E0612"/>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>IsFishing</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1593</ID>
+                  <Description>"inCombat"</Description>
+                  <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:No
+1:Yes
+</DropDownList>
+                  <LastState Value="0" RealAddress="0E6E0504"/>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>inCombat</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1656</ID>
+                  <Description>"ContinentID"</Description>
+                  <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:Not detected
+3024:Azart Hatchery
+9829:Tiran the Sorrow Tree
+9713:Ghillieglade
+</DropDownList>
+                  <LastState Value="0" RealAddress="0E6E0564"/>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>ContinentID</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1577</ID>
+                  <Description>"GameFocus"</Description>
+                  <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:Game not focused
+1:Game focused
+</DropDownList>
+                  <LastState Value="0" RealAddress="0E6E0040"/>
+                  <Color>008000</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>GameFocus</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1453</ID>
+                  <Description>"TP CoolDown"</Description>
+                  <Color>FF0000</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>CoolDown</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1524</ID>
+                  <Description>"setX"</Description>
+                  <Color>FF0000</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>setX</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1699</ID>
+                  <Description>"setY"</Description>
+                  <Color>FF0000</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>setY</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1698</ID>
+                  <Description>"setZ"</Description>
+                  <Color>FF0000</Color>
+                  <VariableType>Float</VariableType>
+                  <Address>setZ</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1693</ID>
+                  <Description>"AutoMoveGoto X"</Description>
+                  <LastState Value="0" RealAddress="0E6E0364"/>
+                  <VariableType>Float</VariableType>
+                  <Address>AutoMoveGoto</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1696</ID>
+                  <Description>"AutoMoveGoto Z"</Description>
+                  <LastState Value="0" RealAddress="0E6E0368"/>
+                  <VariableType>Float</VariableType>
+                  <Address>AutoMoveGoto+4</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1695</ID>
+                  <Description>"AutoMoveGoto Y"</Description>
+                  <LastState Value="0" RealAddress="0E6E036C"/>
+                  <VariableType>Float</VariableType>
+                  <Address>AutoMoveGoto+8</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1174</ID>
+              <Description>"Camera"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <Color>FF00FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+
+[DISABLE]
+
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>145</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>1131</ID>
+                  <Description>"Cinematic Camera"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(_Interval,08)
+registersymbol(_Interval)
+_Interval:
+dd #0
+alloc(_IntervalMax,08)
+registersymbol(_IntervalMax)
+_IntervalMax:
+dd #5
+alloc(_SpeedModifier,08)
+registersymbol(_SpeedModifier)
+_SpeedModifier:
+dd #1
+
+
+aobscanmodule(CinematicRotation,TERA.exe,8B 41 20 89 45 F8 8B 41 24 89 45 FC EB) // should be unique
+alloc(newmem,$50)
+
+label(code)
+label(return)
+label(reset)
+
+newmem:
+push rbx
+mov rbx,[_IntervalMax]
+
+cmp [_Interval],rbx
+jg reset
+
+code:
+
+  mov eax,[ecx+20]
+  mov [ebp-08],eax
+  inc [_Interval]
+
+  pop rbx
+  jmp return
+
+reset:
+mov [_Interval],#0
+mov rbx,[_SpeedModifier]
+add [ecx+20],rbx
+jmp code
+
+CinematicRotation:
+  jmp newmem
+  nop
+return:
+registersymbol(CinematicRotation)
+
+[DISABLE]
+
+CinematicRotation:
+  db 8B 41 20 89 45 F8
+
+unregistersymbol(CinematicRotation)
+dealloc(newmem)
+
+dealloc(_Interval)
+unregistersymbol(_Interval)
+dealloc(_IntervalMax)
+unregistersymbol(_IntervalMax)
+dealloc(_SpeedModifier)
+unregistersymbol(_SpeedModifier)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1132</ID>
+                      <Description>"Max Interval"</Description>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>_IntervalMax</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1133</ID>
+                      <Description>"Speed Modifier"</Description>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>_SpeedModifier</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1141</ID>
+                  <Description>"Disable collision"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+//before: F3 0F 10 47 08 F3 0F 5C C3 F3 0F 11 45
+aobscanmodule(CamCollission,TERA.exe,F3 0F 5C C3 F3 0F 11 45 F8 E8 10)
+registersymbol(CamCollission)
+CamCollission:
+  db 90 90 90 90
+
+[DISABLE]
+
+CamCollission:
+  db F3 0F 5C C3
+
+unregistersymbol(CamCollission)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1145</ID>
+                  <Description>"Fov"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(_Fov,08)
+registersymbol(_Fov)
+_Fov:
+dd (float)71
+
+aobscanmodule(Fov,TERA.exe,D9 85 2C FF FF FF D8)
+alloc(newmem,$30)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+push rbx
+mov rbx,[_Fov]
+mov [ebp-000000D4],rbx
+pop rbx
+
+  fld dword ptr [ebp-000000D4]
+  jmp return
+
+Fov:
+  jmp newmem
+  nop
+return:
+registersymbol(Fov)
+
+[DISABLE]
+
+Fov:
+  db D9 85 2C FF FF FF
+
+unregistersymbol(Fov)
+dealloc(newmem)
+dealloc(_Fov)
+unregistersymbol(_Fov)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1146</ID>
+                      <Description>"value"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>_Fov</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1003</ID>
+                  <Description>"Infinite camera distance"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(CameraMaxDistance,TERA.exe,D9 46 68 F3 0F 10 4E 60) // should be unique
+alloc(newmem,$20)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+mov [esi+68],(float)9999 //This should be enough
+  fld dword ptr [esi+68]
+  movss xmm1,[esi+60]
+  jmp return
+
+CameraMaxDistance:
+  jmp newmem
+  nop
+  nop
+  nop
+return:
+registersymbol(CameraMaxDistance)
+
+[DISABLE]
+
+CameraMaxDistance:
+  db D9 46 68 F3 0F 10 4E 60
+
+unregistersymbol(CameraMaxDistance)
+dealloc(newmem)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1795</ID>
+                  <Description>"FPS Utility"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(FPSUtility,TERA.exe,55  8B ??  8B ?? ??  83 ?? ???????? ?? 6A ?? 6A ?? 6A ?? 68 ???????? 50  FF ?? ??  A3 ???????? E8 ???????? 5D  C2 ???? ) // should be unique
+registersymbol(FPSUtility)
+FPSUtility:
+  db C2 08 00
+[DISABLE]
+
+FPSUtility:
+  db 55 8B EC
+
+unregistersymbol(FPSUtility)
+
+</AssemblerScript>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1171</ID>
+              <Description>"Mods"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <Color>FF00FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+
+[DISABLE]
+
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>145</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>597</ID>
+                  <Description>"Allow skills while jumping"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+aobscanmodule(JMPnSkill,TERA.exe,8378xxxx0F84xxxxxxxxxxxxxxxxxx83xxxx3Dxxxxxxxxxxxxxxxxxxxx0FB6)
+JMPnSkill:
+  db 83 78 3C 04
+registersymbol(JMPnSkill)
+
+[DISABLE]
+JMPnSkill:
+  db 83 78 3C 07
+unregistersymbol(JMPnSkill)
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>554</ID>
+                  <Description>"Disable Fall Damage"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+aobscanmodule(NoFallDamage,TERA.exe,D9 40 08 D9 59 08 E9 ?? ?? ?? ?? 85 F6)
+alloc(nofallcode,$20)
+
+label(code)
+label(return)
+
+nofallcode:
+
+code:
+nop
+  jmp NoFallDamage+B
+NoFallDamage:
+  jmp nofallcode
+  nop
+return:
+registersymbol(NoFallDamage)
+
+
+[DISABLE]
+
+NoFallDamage:
+  db D9 40 08 D9 59 08
+
+unregistersymbol(NoFallDamage)
+dealloc(nofallcode)
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>499</ID>
+                  <Description>"Disable Collision (DO NOT USE IN DUNGEONS)"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+aobscanmodule(NoCollide,TERA.exe,39xxxxxxxxxxxxxxxxxxxxxx8D45xx8Bxxxx8Dxxxxxxxxxxxxxxxxxxxxxx8B)
+registersymbol(NoCollide)
+NoCollide:
+  db 90 90 90 90 90 90
+
+
+[DISABLE]
+NoCollide:
+  db 39 B8 98 00 00 00
+
+unregistersymbol(NoCollide)
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>920</ID>
+                  <Description>"Disable Collision+ (DO NOT USE IN DUNGEONS)"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+aobscanmodule(dsdsidjsad,TERA.exe,F3 0F 10 50 04 F3 0F 10 70 08)
+dsdsidjsad:
+  db 90 90 90 90 90
+registersymbol(dsdsidjsad)
+[DISABLE]
+dsdsidjsad:
+  db F3 0F 10 50 04
+unregistersymbol(dsdsidjsad)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1720</ID>
+                  <Description>"Easy Broker"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(BrokerHijack,TERA.exe,FF 70 04 8B 49 44) // should be unique
+alloc(newmem,$20)
+
+label(code)
+label(return)
+
+newmem:
+code:
+  push 25
+  mov ecx,[ecx+44]
+  jmp return
+
+BrokerHijack:
+  jmp newmem
+  nop
+return:
+registersymbol(BrokerHijack)
+
+[DISABLE]
+
+BrokerHijack:
+  db FF 70 04 8B 49 44
+
+unregistersymbol(BrokerHijack)
+dealloc(newmem)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>555</ID>
+                  <Description>"Fast Ladder Climb"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+aobscanmodule(InstantLadder,TERA.exe,F3 0F 10 40 08 8B 46 04 F3 0F 11 45 F4)
+alloc(ladderhack,$20)
+
+label(code)
+label(return)
+
+ladderhack:
+finit
+fld dword ptr [_PlyY]
+fld dword ptr [eax+08]
+fcomi st(0),st(1)
+jne code
+  mov [eax+08],(float)100000
+  movss xmm0,[eax+08]
+  jmp return
+code:
+  movss xmm0,[eax+08]
+  jmp return
+
+lowlow:
+  nop
+  jmp return
+
+InstantLadder:
+  jmp ladderhack
+return:
+registersymbol(InstantLadder)
+
+[DISABLE]
+InstantLadder:
+  db F3 0F 10 40 08
+
+unregistersymbol(InstantLadder)
+dealloc(ladderhack)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1744</ID>
+                  <Description>"Fishing assistant"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(EasyCatch,TERA.exe,F3 0F 10 5E 0C 8B)
+alloc(newmem,$40)
+
+label(code)
+label(return)
+
+newmem:
+cmp [esi+40],#3 //Minimum tier to catch
+jl code //
+
+mov [esi+50],(float)364 //my fish
+mov [esi+0C],(float)364 //catchable fish
+  movss xmm3,[esi+0C]
+  jmp return
+
+code:
+mov [esi+44],(float)1
+  movss xmm3,[esi+0C]
+  jmp return
+
+EasyCatch:
+  jmp newmem
+return:
+registersymbol(EasyCatch)
+
+[DISABLE]
+
+EasyCatch:
+  db F3 0F 10 5E 0C
+
+unregistersymbol(EasyCatch)
+dealloc(newmem)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>786</ID>
+                  <Description>"Ghost mode (Aka Force Desync)"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+//sig: 8B ?? ??  83 ?? ?? 74 ?? 8D ?? ??   8B ?? ??  8D ?? ??   85 ??  74 ?? 8B ?? ??  85 ??  74 ?? 8B ?? ??  85 ??  74 ?? 8B ??  53  57  FF ?? ??  5F  5E  5B  8B ??  5D  C2 ????
+aobscanmodule(GhostMode,TERA.exe,8B 45 08 83 F8 FF 74 22 8D 0C 80 8B 46 04) // should be unique
+registersymbol(GhostMode)
+GhostMode+6:
+  db EB
+
+[DISABLE]
+
+GhostMode+6:
+  db 74
+unregistersymbol(GhostMode)
+
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>562</ID>
+                  <Description>"Swim on land"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+aobscanmodule(SwimOnLand,TERA.exe,8B 75 08 57 8D 79 14)
+registersymbol(SwimOnLand)
+SwimOnLand:
+  db 90 90 90
+
+[DISABLE]
+SwimOnLand:
+  db 8B 75 08
+
+unregistersymbol(SwimOnLand)
+
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>145</Key>
+                      </Keys>
+                      <ID>0</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1170</ID>
+              <Description>"Movement"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <Color>FF00FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+
+[DISABLE]
+
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>145</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>548</ID>
+                  <Description>"Teleport"</Description>
+                  <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(_TPpreset,08)
+registersymbol(_TPpreset)
+_TPpreset:
+dd 0
+alloc(EnabledPoint,08)
+registersymbol(EnabledPoint)
+EnabledPoint:
+dd 0
+alloc(CoolDown,08)
+registersymbol(CoolDown)
+CoolDown:
+dd #0
+{
+rk9 final x:-33766 y:23 z:40637
+
+}
+alloc(TeleportHack,$200)
+label(returnhere)
+label(originalcode)
+label(exit)
+label(SkipCoolDown)
+label(ForceCoolDown)
+label(GoBackTOPlXButAlsoTPHasTOShutOff)
+//START OF CODE
+label(setX)
+registersymbol(setX)
+label(setY)
+registersymbol(setY)
+label(setZ)
+registersymbol(setZ)
+label(TPtimer)
+registersymbol(TPtimer)
+
+
+label(Velika1)
+label(Velika2)
+label(Velika3)
+label(Lumbertown)
+label(Crescentia)
+label(Popolion)
+label(PoraElinu)
+label(Chebika)
+label(BOL)
+label(BOL_1)
+label(BOL_2)
+label(SM)
+label(SM_1)
+label(SM_2)
+label(Baldera)
+label(OnePiece)
+label(CS_A)
+label(CS_D)
+label(CS_M_Tow)
+label(CS_N_Tow)
+label(CS_S_Tow)
+label(Celestial)
+label(Sky)
+label(Unused_Desert)
+label(Highwatch)
+label(MCtele)
+label(Highwatch_PVP)
+label(Step_Beg)
+label(Alle_center)
+label(Velika_Mountain)
+label(Velika_Teleportal)
+label(Tria)
+label(Serenity_V)
+label(Silent_H)
+label(Tralion)
+label(SharaFountain)
+label(Heartwood)
+label(Acarum)
+label(Bleakrock)
+label(Kaiator)
+label(Habere)
+label(Ebon_Tower)
+label(Dragonfall)
+label(Scythera)
+label(Thrallhold)
+label(Thrallhold2)
+label(EbonOut)
+label(ExPrima)
+label(Pool)
+label(TopHighwatch)
+label(TutVillage)
+label(TutCamp)
+label(FloatingCastle)
+label(EbonHigh)
+label(FW_TOP)
+label(FW_MID)
+label(FW_BOT)
+label(VO_Spot3)
+label(CutthroatHarbor)
+label(Frontera)
+label(Castanica)
+label(Elenea)
+label(Bastion)
+label(Tulufan)
+label(TempestOutpost)
+label(Hurlan)
+label(ShoreHold_1)
+label(ShoreHold_2)
+label(ShoreHold_3)
+label(Premium)
+label(bahaar)
+label(Apex)
+label(Exodor)
+label(Exodor2)
+label(Exodor3)
+{label(Exodor44)
+label(Exodor55) //}
+
+
+
+TeleportHack:
+movss xmm0,[ebp-08]
+//less ram usage
+cmp [_OnFoot],#1
+jne playerX
+// custom location
+cmp [CoolDown],#0
+je SkipCoolDown
+dec [CoolDown]
+SkipCoolDown:
+cmp [CoolDown],#0
+jg ForceCoolDown
+cmp [EnabledPoint],#1
+je originalcode
+ForceCoolDown:
+//main check
+cmp [_TPpreset],#0
+je PlayerX
+//---
+cmp [_TPpreset],#902
+je Velika3
+cmp [_TPpreset],#901
+je Baldera
+cmp [_TPpreset],#903
+je OnePiece
+cmp [_TPpreset],#904
+je Unused_Desert
+cmp [_TPpreset],#905
+je Highwatch_PVP
+
+
+cmp [_TPpreset],#1
+je Velika1
+cmp [_TPpreset],#2
+je Velika2
+cmp [_TPpreset],#3
+je Lumbertown
+cmp [_TPpreset],#4
+je Crescentia
+cmp [_TPpreset],#5
+je Popolion
+cmp [_TPpreset],#6
+je PoraElinu
+cmp [_TPpreset],#7
+je Chebika
+cmp [_TPpreset],#8
+je BOL
+cmp [_TPpreset],#9
+je BOL_1
+cmp [_TPpreset],#10
+je BOL_2
+cmp [_TPpreset],#11
+je SM
+cmp [_TPpreset],#12
+je SM_1
+cmp [_TPpreset],#13
+je SM_2
+cmp [_TPpreset],#14
+je CS_A
+cmp [_TPpreset],#15
+je CS_D
+cmp [_TPpreset],#16
+je CS_M_Tow
+cmp [_TPpreset],#17
+je CS_N_Tow
+cmp [_TPpreset],#18
+je CS_S_Tow
+cmp [_TPpreset],#19
+je Celestial
+cmp [_TPpreset],#20
+je Sky
+cmp [_TPpreset],#21
+je Highwatch
+cmp [_TPpreset],#22
+je MCtele
+cmp [_TPpreset],#23
+je Step_Beg
+cmp [_TPpreset],#24
+je Alle_center
+cmp [_TPpreset],#25
+je Velika_Mountain
+cmp [_TPpreset],#26
+je Velika_Teleportal
+cmp [_TPpreset],#27
+je Tria
+cmp [_TPpreset],#28
+je Serenity_V
+cmp [_TPpreset],#29
+je Silent_H
+cmp [_TPpreset],#30
+je Tralion
+cmp [_TPpreset],#31
+je SharaFountain
+cmp [_TPpreset],#32
+je Heartwood
+cmp [_TPpreset],#33
+je Acarum
+cmp [_TPpreset],#34
+je Bleakrock
+cmp [_TPpreset],#35
+je Kaiator
+cmp [_TPpreset],#36
+je Habere
+cmp [_TPpreset],#37
+je Ebon_Tower
+cmp [_TPpreset],#38
+je Dragonfall
+cmp [_TPpreset],#39
+je Scythera
+cmp [_TPpreset],#40
+je Thrallhold
+cmp [_TPpreset],#41
+je Thrallhold2
+cmp [_TPpreset],#42
+je EbonOut
+cmp [_TPpreset],#43
+je ExPrima
+cmp [_TPpreset],#44
+je Pool
+cmp [_TPpreset],#45
+je TopHighwatch
+cmp [_TPpreset],#46
+je TutVillage
+cmp [_TPpreset],#47
+je TutCamp
+cmp [_TPpreset],#48
+je FloatingCastle
+cmp [_TPpreset],#49
+je EbonHigh
+cmp [_TPpreset],#50
+je FW_TOP
+cmp [_TPpreset],#51
+je FW_MID
+cmp [_TPpreset],#52
+je FW_BOT
+cmp [_TPpreset],#53
+je VO_Spot3
+cmp [_TPpreset],#54
+je CutthroatHarbor
+cmp [_TPpreset],#55
+je Frontera
+cmp [_TPpreset],#56
+je Castanica
+cmp [_TPpreset],#57
+je Elenea
+cmp [_TPpreset],#58
+je Bastion
+cmp [_TPpreset],#59
+je Tulufan
+cmp [_TPpreset],#60
+je TempestOutpost
+cmp [_TPpreset],#61
+je Hurlan
+cmp [_TPpreset],#62
+je ShoreHold_1
+cmp [_TPpreset],#63
+je ShoreHold_2
+cmp [_TPpreset],#64
+je ShoreHold_3
+cmp [_TPpreset],#65
+je Premium
+cmp [_TPpreset],#66
+je bahaar
+cmp [_TPpreset],#67
+je Apex
+cmp [_TPpreset],#68
+je Exodor
+cmp [_TPpreset],#69
+je Exodor2
+cmp [_TPpreset],#70
+je Exodor3
+{cmp [_TPpreset],#71
+je Exodor44
+cmp [_TPpreset],#72
+je Exodor55}
+
+
+//----
+jmp PlayerX
+
+originalcode:
+//Prevent teleporting if gathering or auto moving
+cmp [IsGathering],#1
+je GoBackTOPlXButAlsoTPHasTOShutOff
+cmp [IsPlayerAutoMoving],#1
+je GoBackTOPlXButAlsoTPHasTOShutOff
+//Undermap prevention
+cmp [setX],#0
+je ResetTPtimer
+cmp [setY],(float)-3617.125488
+je ResetTPtimer
+cmp [setY],(float)818.2392578
+je ResetTPtimer
+cmp [setY],(float)392.0322571
+je ResetTPtimer
+///
+inc [TPtimer]
+mov eax,[setX]
+readmem(PlayerX,5) // X coord
+mov eax,[ebp-10]
+movss [ebp-0C],xmm0
+mov eax,[setZ]
+readmem(PlayerZ,5) // Z coord
+mov eax,[ebp-0C]
+mov eax,[setY]
+readmem(PlayerY,5) // Y coord
+cmp [TPtimer],#250 //(250 works but 1 bug)
+jge ResetTPtimer
+jmp PlayerY+5
+
+GoBackTOPlXButAlsoTPHasTOShutOff:
+mov [EnabledPoint],#0
+mov [_TPpreset],#0
+mov [setX],#0
+cmp [CoolDown],#3000
+jg PlayerX
+mov [CoolDown],#3000
+jmp PlayerX
+
+ResetTPtimer:
+mov [TPtimer],#0
+mov [setX],#0
+mov [_TPpreset],#0
+mov [EnabledPoint],#0
+mov [CoolDown],#25000
+jmp TeleportHack
+///////////////////////////////////////////////////////////
+//   presets are here, edit them as much as u want :)
+///////////////////////////////////////////////////////////
+jmp originalcode
+Velika1:
+mov [setX],(float)-380
+mov [setY],(float)2180
+mov [setZ],(float)8690
+jmp originalcode
+Velika2:
+mov [setX],(float)12838
+mov [setY],(float)925.1445312
+mov [setZ],(float)6407
+jmp originalcode
+Lumbertown:
+mov [setX],(float)88030
+mov [setY],(float)1070
+mov [setZ],(float)-5677
+jmp originalcode
+Crescentia:
+mov [setX],(float)95412
+mov [setY],(float)2935
+mov [setZ],(float)17505
+jmp originalcode
+Popolion:
+mov [setX],(float)-16600
+mov [setY],(float)2940
+mov [setZ],(float)51790
+jmp originalcode
+PoraElinu:
+mov [setX],(float)-33954.25
+mov [setY],(float)2102
+mov [setZ],(float)34371
+jmp originalcode
+Chebika:
+mov [setX],(float)-33540
+mov [setY],(float)300
+mov [setZ],(float)-20395
+jmp originalcode
+BOL:
+mov [setX],(float)119825
+mov [setY],(float)2800
+mov [setZ],(float)25330
+jmp originalcode
+BOL_1:
+mov [setX],(float)70300
+mov [setY],(float)-293
+mov [setZ],(float)4690
+jmp originalcode
+BOL_2:
+mov [setX],(float)65686
+mov [setY],(float)-37
+mov [setZ],(float)8977
+jmp originalcode
+SM:
+mov [setX],(float)-5175
+mov [setY],(float)4610
+mov [setZ],(float)71910
+jmp originalcode
+SM_1:
+mov [setX],(float)70467
+mov [setY],(float)4103
+mov [setZ],(float)27350
+jmp originalcode
+SM_2:
+mov [setX],(float)68858
+mov [setY],(float)3321
+mov [setZ],(float)22840
+jmp originalcode
+Velika3:                                  //test zone
+mov [setX],(float)12494.02344
+mov [setY],(float)711.8045654
+mov [setZ],(float)6640.256836
+jmp originalcode
+Baldera:
+mov [setX],(float)135267
+mov [setY],(float)3795
+mov [setZ],(float)31569
+jmp originalcode
+OnePiece:
+mov [setX],(float)31757
+mov [setY],(float)1144
+mov [setZ],(float)121299
+jmp originalcode
+CS_A:
+mov [setX],(float)2317
+mov [setY],(float)1557
+mov [setZ],(float)109757
+jmp originalcode
+CS_D:
+mov [setX],(float)13789
+mov [setY],(float)2265
+mov [setZ],(float)121412
+jmp originalcode
+CS_M_Tow:
+mov [setX],(float)10236
+mov [setY],(float)2688
+mov [setZ],(float)117854
+jmp originalcode
+CS_N_Tow:
+mov [setX],(float)11084
+mov [setY],(float)1908
+mov [setZ],(float)113091
+jmp originalcode
+CS_S_Tow:
+mov [setX],(float)5298
+mov [setY],(float)1908
+mov [setZ],(float)118533
+jmp originalcode
+Celestial:
+mov [setX],(float)21785
+mov [setY],(float)12850
+mov [setZ],(float)-130325
+jmp originalcode
+Sky:
+mov [setX],(float)34400
+mov [setY],(float)9376
+mov [setZ],(float)38245
+jmp originalcode
+Unused_Desert:
+mov [setX],(float)-50000
+mov [setY],(float)2455
+mov [setZ],(float)25055
+jmp originalcode
+Highwatch:
+mov [setX],(float)21230
+mov [setY],(float)6216
+mov [setZ],(float)5910
+jmp originalcode
+MCtele:
+mov [setX],(float)40540
+mov [setY],(float)9350
+mov [setZ],(float)37340
+jmp originalcode
+Highwatch_PVP:
+mov [setX],(float)19495
+mov [setY],(float)395
+mov [setZ],(float)-34062
+jmp originalcode
+Step_Beg:
+mov [setX],(float)16845
+mov [setY],(float)-4430
+mov [setZ],(float)1234
+jmp originalcode
+Alle_center:
+mov [setX],(float)-3080
+mov [setY],(float)7000
+mov [setZ],(float)-3636
+jmp originalcode
+Velika_Mountain:
+mov [setX],(float)25960
+mov [setY],(float)7890
+mov [setZ],(float)-7810
+jmp originalcode
+Velika_Teleportal:                        // test zone 2
+mov [setX],(float)13443.2793
+mov [setY],(float)681.1616211
+mov [setZ],(float)7416.162109
+jmp originalcode
+Tria:
+mov [setX],(float)48333
+mov [setY],(float)4280
+mov [setZ],(float)-2000
+jmp originalcode
+Serenity_V:
+mov [setX],(float)63863
+mov [setY],(float)655
+mov [setZ],(float)-10025
+jmp originalcode
+Silent_H:
+mov [setX],(float)54485
+mov [setY],(float)1925
+mov [setZ],(float)-16400
+jmp originalcode
+Tralion:
+mov [setX],(float)55515
+mov [setY],(float)3050
+mov [setZ],(float)-40890
+jmp originalcode
+SharaFountain:
+mov [setX],(float)54875
+mov [setY],(float)5160
+mov [setZ],(float)-70590
+jmp originalcode
+Heartwood:
+mov [setX],(float)54790
+mov [setY],(float)3125
+mov [setZ],(float)23340
+jmp originalcode
+Acarum:
+mov [setX],(float)-8590
+mov [setY],(float)2655
+mov [setZ],(float)-69190
+jmp originalcode
+Bleakrock:
+mov [setX],(float)-44400
+mov [setY],(float)1220
+mov [setZ],(float)-71855
+jmp originalcode
+Kaiator:
+mov [setX],(float)-10875
+mov [setY],(float)3975
+mov [setZ],(float)5105
+jmp originalcode
+Habere:
+mov [setX],(float)-7100
+mov [setY],(float)6090
+mov [setZ],(float)62805
+jmp originalcode
+Ebon_Tower:
+mov [setX],(float)9525
+mov [setY],(float)8340
+mov [setZ],(float)41430
+jmp originalcode
+Dragonfall:
+mov [setX],(float)-40265
+mov [setY],(float)4570
+mov [setZ],(float)9170
+jmp originalcode
+Scythera:
+mov [setX],(float)-58245
+mov [setY],(float)2155
+mov [setZ],(float)-25085
+jmp originalcode
+Thrallhold:
+mov [setX],(float)15025
+mov [setY],(float)-10
+mov [setZ],(float)-28135
+jmp originalcode
+Thrallhold2:
+mov [setX],(float)-22245
+mov [setY],(float)1022
+mov [setZ],(float)-53215
+jmp originalcode
+EbonOut:
+mov [setX],(float)26470
+mov [setY],(float)3290
+mov [setZ],(float)41185
+jmp originalcode
+ExPrima:
+mov [setX],(float)20880
+mov [setY],(float)3555
+mov [setZ],(float)-6825
+jmp originalcode
+Pool:
+mov [setX],(float)-21345
+mov [setY],(float)-1545
+mov [setZ],(float)-11515
+jmp originalcode
+TopHighwatch:
+mov [setX],(float)15755
+mov [setY],(float)13230
+mov [setZ],(float)9290
+jmp originalcode
+TutVillage:
+mov [setX],(float)18335
+mov [setY],(float)-3375
+mov [setZ],(float)8705
+jmp originalcode
+TutCamp:
+mov [setX],(float)26205
+mov [setY],(float)-1740
+mov [setZ],(float)6120
+jmp originalcode
+FloatingCastle:
+mov [setX],(float)97290
+mov [setY],(float)4695
+mov [setZ],(float)103390
+jmp originalcode
+EbonHigh:
+mov [setX],(float)9085
+mov [setY],(float)23085
+mov [setZ],(float)39840
+jmp originalcode
+FW_TOP:
+mov [setX],(float)12065
+mov [setY],(float)1555
+mov [setZ],(float)35760
+jmp originalcode
+FW_MID:
+mov [setX],(float)7750
+mov [setY],(float)1760
+mov [setZ],(float)38435
+jmp originalcode
+FW_BOT:
+mov [setX],(float)3185
+mov [setY],(float)1650
+mov [setZ],(float)40210
+jmp originalcode
+VO_Spot3:
+mov [setX],(float)10372
+mov [setY],(float)1338
+mov [setZ],(float)7940
+jmp originalcode
+CutthroatHarbor:
+mov [setX],(float)52660
+mov [setY],(float)515
+mov [setZ],(float)69140
+jmp originalcode
+Frontera:
+mov [setX],(float)-43450
+mov [setY],(float)285
+mov [setZ],(float)57800
+jmp originalcode
+Castanica:
+mov [setX],(float)90300
+mov [setY],(float)2450
+mov [setZ],(float)74910
+jmp originalcode
+Elenea:
+mov [setX],(float)-56680
+mov [setY],(float)2175
+mov [setZ],(float)-11000
+jmp originalcode
+Bastion:
+mov [setX],(float)-13595
+mov [setY],(float)685
+mov [setZ],(float)54000
+jmp originalcode
+Tulufan:
+mov [setX],(float)-55385
+mov [setY],(float)2505
+mov [setZ],(float)-38105
+jmp originalcode
+TempestOutpost:
+mov [setX],(float)44184
+mov [setY],(float)7570
+mov [setZ],(float)28630
+jmp originalcode
+Hurlan:
+mov [setX],(float)27770
+mov [setY],(float)3630
+mov [setZ],(float)-10330
+jmp originalcode
+ShoreHold_1:
+mov [setX],(float)0
+mov [setY],(float)0
+mov [setZ],(float)0
+jmp originalcode
+ShoreHold_2:
+mov [setX],(float)0
+mov [setY],(float)0
+mov [setZ],(float)0
+jmp originalcode
+ShoreHold_3:
+mov [setX],(float)0
+mov [setY],(float)0
+mov [setZ],(float)0
+jmp originalcode
+Premium:
+mov [setX],(float)54997
+mov [setY],(float)4516.9375
+mov [setZ],(float)116171
+jmp originalcode
+bahaar:
+mov [setX],(float)115330
+mov [setY],(float)7200
+mov [setZ],(float)96860
+jmp originalcode
+Apex:
+mov [setX],(float)-37620
+mov [setY],(float)5
+mov [setZ],(float)-7350
+jmp originalcode
+Exodor:
+mov [setX],(float)93775
+mov [setY],(float)13410
+mov [setZ],(float)-105520
+jmp originalcode
+Exodor2:
+mov [setX],(float)145280
+mov [setY],(float)24025
+mov [setZ],(float)-127380
+jmp originalcode
+Exodor3:
+mov [setX],(float)160275
+mov [setY],(float)16065
+mov [setZ],(float)-112050
+jmp originalcode
+{Exodor44:
+mov [setX],(float)160260
+mov [setY],(float)16860
+mov [setZ],(float)-81520
+jmp originalcode
+Exodor55:
+mov [setX],(float)146550
+mov [setY],(float)19145
+mov [setZ],(float)-90200
+jmp originalcode //}
+
+exit:
+jmp returnhere
+setX:
+dd (float)0
+setY:
+dd (float)0
+setZ:
+dd (float)0
+TPtimer:
+dd 0
+returnhere:
+
+TeleportScan:
+jmp TeleportHack
+
+[DISABLE]
+TeleportScan:
+movss xmm0,[ebp-08]
+
+dealloc(_TPpreset)
+unregistersymbol(_TPpreset)
+dealloc(EnabledPoint)
+unregistersymbol(EnabledPoint)
+dealloc(TeleportHack)
+unregistersymbol(CoolDown)
+dealloc(CoolDown)
+
+unregistersymbol(setX)
+unregistersymbol(setY)
+unregistersymbol(setZ)
+unregistersymbol(TPtimer)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>549</ID>
+                      <Description>""</Description>
+                      <DropDownList ReadOnly="1" DescriptionOnly="1" DisplayValueAsItem="1">0:Select a location
+99991:
+99991:---- Velika Continent ----
+65:Premium area
+1:Velika Plaza
+2:Velika Outskirts
+25:Velika Outskirts (Top of the Mountain)
+901:Baldera Undiscovered
+56:Castanica
+7:Chebika
+4:Crescentia
+54:Cutthroat Harbor
+3:Lumbertown
+5:Popolion
+6:Pora Elinu
+59:Tulufan
+8:BOL Teleportal
+11:Sinestral Manor Teleportal
+12: SM Boss 1 (Once inside)
+13: SM Boss 2 (Once Inside)
+66:Bahaar Teleportal
+67:Apex Arena
+48:Floating Castle
+903:Thousand Sunny boat
+904:Unused Desert
+26:Velika Outskirts (Test zone 1)
+902:Velika Outskirts (Test zone 2)
+53:Velika Outskirts (Test zone 3)
+99991:
+99991:---- Highwatch Continent ----
+43:Ex Prima (Camp)
+21:Highwatch
+45:Highwatch (on top)
+905:Highwatch Out of Map
+61:Hurlan Watch Teleport Platform
+44:Jungle Pool
+22:Macellarius Catacombs (Teleportal)
+20:Sky Cruiser (Teleportal)
+60:Tempest Outpost
+99991:
+99991:---- Exodor Continent ----
+68:Crystal Canyon (first area)
+69:Murdering Monarch Rest Area
+70:Murdering Monarch Hunting Zone
+71:Crystal Tor
+72:Beast Farm
+99991:
+99991:---- Stepstone Isle Continent ----
+23:Tangle Point
+46:Village
+47:Camp
+99991:
+99991:---- Allemantheia Continent ----
+33:Acarum
+24:Allemantheia City Center
+58:Bastion
+34:Bleakrock
+57:Elenea
+55:Frontera
+32:Heartwood
+28:Serenity Valley (Camp)
+29:Silent Hills (Camp)
+31:Shara's Fountain
+30:Tralion
+27:Tria
+99991:
+99991:---- Kaiator Continent ----
+36:Habere
+38:Dragonfall
+37:Ebon Tower
+42:Ebon Tower (Unused Area)
+49:Ebon Tower (Highest Spot)
+35:Kaiator
+39:Scythera Fae
+41:Thrallhold (Unused Area)
+40:Pathfinder Post
+99991:
+99991:---- Battlegrounds ----
+14:[CS] Attacker Team Spawnpoint
+15:[CS] Defending Team Spawnpoint
+17:[CS] North Tower
+16:[CS] Mid Tower
+18:[CS] South Tower
+50:[FW] Top Cap. Point
+51:[FW] Mid Cap. Point
+52:[FW] Bot Cap. Point
+62:Shore Hold1
+63:Shore Hold2
+64:Shore Hold3
+99991:
+99991:---- Other Locations ----
+19:Out of map Celestial Arena (Once inside)
+</DropDownList>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>_TPpreset</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1080</ID>
+                  <Description>"Vanguard Custom TP 1"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(number,08)
+registersymbol(number)
+number:
+dd #800001
+
+//800001 = bol
+aobscanmodule(RedirectQ1,TERA.exe,89 ?? ????????  8B ?? ????????  89 ?? ????????  8B ?? ????????  89 ?? ????????  D9 ?? ????????  D9 ?? ????????  8B ?? ????????  89 ?? ????????  8B ?? ????????  89 ?? ????????  8B ?? ????????  8D ?? ????????  89 ?? ????????  89 ?? ??  C7 ?? ???????? 8D ?? ????????  C6 ?? ?? ?? 50  C7 ?? ?? ???????? C7 ?? ?? ????????)
+alloc(newmem,$30)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+mov eax,[number]
+  mov [edi+00000084],eax
+  jmp return
+
+RedirectQ1:
+  jmp newmem
+  nop
+return:
+registersymbol(RedirectQ1)
+
+
+[DISABLE]
+dealloc(number)
+unregistersymbol(number)
+
+RedirectQ1:
+  db 89 87 88 00 00 00
+
+unregistersymbol(RedirectQ1)
+dealloc(newmem)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1081</ID>
+                      <Description>""</Description>
+                      <DropDownList ReadOnly="1" DescriptionOnly="1" DisplayValueAsItem="1">:--- Dungeons ----
+800001:BOL
+800002:SM
+800003:SA
+800004:CR
+800005:Necro (Westonia)
+800006:Golden
+800007:AH
+800008:Sky Garden
+800009:LOT
+800010:Ebon Tower
+1103:Argon Corpus
+1101:Balder's Temple
+:--- Solo mission spots ----
+800030:Vanguard Outpost
+800031:Godric's Farm
+800034:Camp Retribution
+800035:Alethea's Last Hope
+800036:Desert Overwatch
+800037:Relic Hunter Outpost
+800038:Emergency Camp
+800039:Sietch Bidaum
+800040:Sandwalker Refuge
+800041:Seeker's Locus
+800042:Beacon Point Garrison
+800043:Feral Valley Station
+800044:The Beachhead
+800045:Coastal Overwatch
+800046:Accipiter Watchpost
+800047:Manafire Outpost
+1401:Spring Valley Teleport Platform
+800108:Ladder Spot
+</DropDownList>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>number</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1074</ID>
+                  <Description>"Vanguard Custom TP 2"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(number,08)
+registersymbol(number)
+number:
+dd #810001
+
+//800001 = bol
+aobscanmodule(RedirectQ1,TERA.exe,89 ?? ????????  8B ?? ????????  89 ?? ????????  8B ?? ????????  89 ?? ????????  D9 ?? ????????  D9 ?? ????????  8B ?? ????????  89 ?? ????????  8B ?? ????????  89 ?? ????????  8B ?? ????????  8D ?? ????????  89 ?? ????????  89 ?? ??  C7 ?? ???????? 8D ?? ????????  C6 ?? ?? ?? 50  C7 ?? ?? ???????? C7 ?? ?? ????????)
+alloc(newmem,$30)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+mov eax,[number]
+  mov [edi+00000084],eax
+  jmp return
+
+RedirectQ1:
+  jmp newmem
+  nop
+return:
+registersymbol(RedirectQ1)
+
+
+[DISABLE]
+dealloc(number)
+unregistersymbol(number)
+
+RedirectQ1:
+  db 89 87 88 00 00 00
+
+unregistersymbol(RedirectQ1)
+dealloc(newmem)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1075</ID>
+                      <Description>""</Description>
+                      <DropDownList ReadOnly="1" DescriptionOnly="1" DisplayValueAsItem="1">:--- Dungeons ----
+810001:BOL
+810002:SM
+810003:SA
+810004:CR
+810005:Necro (Westonia)
+810006:Golden
+810007:AH
+810008:Sky Garden
+810009:LOT
+810010:Ebon Tower
+1103:Argon Corpus
+1101:Balder's Temple
+:--- Solo mission spots ----
+810030:Vanguard Outpost
+810031:Godric's Farm
+810034:Camp Retribution
+810035:Alethea's Last Hope
+810036:Desert Overwatch
+810037:Relic Hunter Outpost
+810038:Emergency Camp
+810039:Sietch Bidaum
+810040:Sandwalker Refuge
+810041:Seeker's Locus
+810042:Beacon Point Garrison
+810043:Feral Valley Station
+810044:The Beachhead
+810045:Coastal Overwatch
+810046:Accipiter Watchpost
+810047:Manafire Outpost
+1401:Spring Valley Teleport Platform
+810108:Ladder Spot
+</DropDownList>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>number</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>561</ID>
+                  <Description>"Fly Anywhere"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+//////////////////////////////
+//Disable the foced fall
+//////////////////////////////
+{aobscanmodule(FlyAnywhere,TERA.exe,F3 0F 5C C8 F3 0F 10 45 D4)
+alloc(flyanycode,$50)
+
+label(code)
+label(return)
+
+flyanycode:
+code:
+  nop
+  movss xmm0,[ebp-2C]
+  jmp return
+
+FlyAnywhere:
+  jmp flyanycode
+  nop
+  nop
+  nop
+  nop
+return:
+registersymbol(FlyAnywhere)}
+//////////////////////////////
+//Fly in unflyable regions
+//////////////////////////////
+aobscanmodule(FlyAnywhere2,TERA.exe,83xxxxxxxxxx00 0Fxxxxxxxxxx A1xxxxxxxx 85C0 0Fxxxxxxxxxx 8378xx00 0Fxxxxxxxxxx 8B4Exx E8xxxxxxxx 85C0)
+registersymbol(FlyAnywhere2)
+FlyAnywhere2+6:
+db 01
+//////////////////////////////
+//Fly in unflyable regions
+//////////////////////////////
+aobscanmodule(khgdas,TERA.exe,CC CC 55 8B EC 51 8B 41 44 C1 E0 08) // should be unique
+alloc(newmema,$50)
+
+label(codea)
+label(returna)
+
+newmema:
+
+codea:
+mov [ecx+44],(float)999888
+mov [ecx+54],(float)999888
+mov [ecx+50],#0
+
+  mov eax,[ecx+44]
+  shl eax,08
+  jmp returna
+
+khgdas+06:
+  jmp newmema
+  nop
+returna:
+registersymbol(khgdas)
+[DISABLE]
+//Restore 1
+FlyAnywhere2+6:
+  db 00
+unregistersymbol(FlyAnywhere2)
+
+//Restore 2
+//FlyAnywhere:
+//  db F3 0F 5C C8 F3 0F 10 45 D4
+
+unregistersymbol(FlyAnywhere)
+dealloc(flyanycode)
+
+//Restore 3
+khgdas+06:
+  db 8B 41 44 C1 E0 08
+
+unregistersymbol(khgdas)
+dealloc(newmema)
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>790</ID>
+                  <Description>"Fly Hack"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+{Thanks to diniska-003}
+aobscanmodule(FlyMode,TERA.exe,74 ?? 8B CE E8 ?? ?? ?? ?? 8B C8 E8 ?? ?? ?? ?? 8D 8E B8 00 00 00 E8 ?? ?? ?? ?? 8B ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? 8B F8)
+registersymbol(FlyMode)
+FlyMode:
+db 75
+[DISABLE]
+FlyMode:
+db 74
+unregistersymbol(FlyMode)
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>948</ID>
+                  <Description>"Fly Speed Modifier"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(_FlySpeedValue,08)
+registersymbol(_FlySpeedValue)
+_FlySpeedValue:
+//Default value
+dd (float)1000
+//Default value
+
+aobscanmodule(ksjdgsajhd,TERA.exe,0F 2F 45 F4 76 05) // should be unique
+alloc(newmem,$40)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  comiss xmm0,[ebp-0C]
+  nop
+push rbx
+mov rbx,[_FlySpeedValue]
+mov [esi+08],rbx
+pop rbx
+  jmp return
+
+ksjdgsajhd:
+  jmp newmem
+  nop
+return:
+registersymbol(ksjdgsajhd)
+[DISABLE]
+ksjdgsajhd:
+  db 0F 2F 45 F4 76 05
+unregistersymbol(ksjdgsajhd)
+dealloc(newmem)
+
+dealloc(_FlySpeedValue)
+unregistersymbol(_FlySpeedValue)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>949</ID>
+                      <Description>"Speed:"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>_FlySpeedValue</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>967</ID>
+                  <Description>"Walk on air (Use world data editor)"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+//old scan: aobscanmodule(AirWalk,TERA.exe,75 xx 83 xx xx xx 75 xx B8 xxxxxxxx C3  33 xx  C3  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  8B xx  25 xxxxxxxx 83 xx xx 74 xx B8 xxxxxxxx C3  33 xx  C3  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  56  8B xx xx  33 xx  85 xx  7E xx 8B xx xx  83 xx xx 8B xx  0B xx xx  74 xx 42  83 xx xx 3B xx  7C xx B8)
+aobscanmodule(AirWalk,TERA.exe,C4 FF 5E 83 78 24 00 75 0C)
+AirWalk+7:
+  db EB
+registersymbol(AirWalk)
+
+[DISABLE]
+
+AirWalk+7:
+  db 75
+unregistersymbol(AirWalk)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>756</ID>
+                  <Description>"Walk on water"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(Jesus,TERA.exe,83 ?? 40 00 74 ?? B8 01 00 00 00 C3 33 C0 C3 CC CC CC CC CC CC CC CC CC CC CC 8B 81 ???????? C3 CC) // should be unique
+registersymbol(Jesus)
+
+Jesus+06:
+  db B8 00 00 00 00
+[DISABLE]
+Jesus+06:
+  db B8 01 00 00 00
+
+unregistersymbol(Jesus)
+
+</AssemblerScript>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1172</ID>
+              <Description>"Combat mods"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <Color>FF00FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+
+[DISABLE]
+
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>145</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>1678</ID>
+                  <Description>"Magnet Guardian Balls 2"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(timerGH,08)
+alloc(AutoDistance,08)
+AutoDistance:
+dd (float)1100
+
+aobscanmodule(dkjsfhgksdjf,TERA.exe,89 41 5C 8B 7E 04) // should be unique
+alloc(newmem,$50)
+
+label(code)
+label(return)
+label(meHorse)
+label(balls)
+label(balls_reset)
+label(goBack)
+label(high)
+label(low)
+
+newmem:
+cmp [ContinentID],#7021
+je code
+finit
+mov [Math],(float)3000
+fld dword ptr [Math]
+fld dword ptr [_PlyY]
+fcomi st(0),st(1)
+ja high
+finit
+mov [Math],(float)3000
+fld dword ptr [Math]
+fld dword ptr [_PlyY]
+fcomi st(0),st(1)
+jb low
+jmp goBack
+
+high:
+mov [AutoDistance],(float)1100
+jmp goBack
+low:
+mov [AutoDistance],(float)250
+jmp goBack
+
+goBack:
+
+cmp [ecx+6C],(float)2 //balls
+je balls
+cmp [ecx+6C],(float)0.8500000238 //me horse (might pick something extra)
+je meHorse
+jmp code
+
+
+balls:
+//Grab one orb at a time
+cmp [timerGH],(float)0
+jne code
+
+{//Check if PlayerX == OrbX, if so ignore everything
+//This will make the teleportation faster
+push rbx
+mov rbx,[_PlyX]
+cmp [ecx+54],rbx
+pop rbx
+je code //}
+
+finit
+fld [_PlyX]
+fsub [ecx+54]
+fmul ST(0)
+fstp [Math]
+fld [_PlyY]
+fsub [ecx+5C]
+fmul ST(0)
+fstp [Math+4]
+fld [_PlyZ]
+fsub [ecx+58]
+fmul ST(0)
+fstp [Math+8]
+fld [Math]
+fadd [Math+4]
+fadd [Math+8]
+fsqrt
+fstp [Math+10] //Distance of orb from player
+
+finit
+fld dword [AutoDistance]
+fld dword [Math+10]
+fcomi st(0),st(1)
+ja balls_reset
+
+finit
+mov [Math],(float)50 //min distance to ignore tp
+fld dword [Math]
+fld dword [Math+10]
+fcomi st(0),st(1)
+jb code
+
+//Grab id (using X coord)
+push rbx
+mov rbx,[ecx+54]
+mov [timerGH],rbx
+pop rbx
+
+//Set orb as used
+mov [ecx+6C],(float)3.5
+
+//Copy position of orb/ball
+push rbx
+mov rbx,[ecx+54]
+mov [Math+14],rbx
+mov rbx,[ecx+58]
+mov [Math+18],rbx
+mov rbx,[ecx+5C]
+mov [Math+1C],eax
+pop rbx
+
+
+//Ultra check to prevent wrong teleportation
+cmp [Math+14],(float)0
+je code
+cmp [Math+18],(float)0
+je code
+cmp [Math+1C],(float)0
+je code
+
+
+//Better grab?
+mov [Math],(float)10
+
+finit
+fld dword ptr [Math+1C]
+fld dword ptr [Math]
+fsubp st(1),st(0)
+fstp dword ptr [Math+1C]
+finit
+fld dword ptr [Math+14]
+fld dword ptr [Math]
+fsubp st(1),st(0)
+fstp dword ptr [Math+14]
+finit
+fld dword ptr [Math+1C]
+fld dword ptr [Math]
+faddp st(1),st(0)
+fstp dword ptr [Math+1C]
+
+  mov [ecx+5C],eax
+  mov edi,[esi+04]
+  jmp return
+
+code:
+  mov [ecx+5C],eax
+  mov edi,[esi+04]
+  jmp return
+
+//Player
+meHorse:
+cmp [Math+14],(float)0
+je code
+cmp [Math+18],(float)0
+je code
+cmp [Math+1C],(float)0
+je code
+
+//Prevent being stuck (wil try)
+push rbx
+mov rbx,[Math+14]
+cmp [ecx+54],rbx
+pop rbx
+je code
+
+push rbx
+mov rbx,[Math+14]
+mov [ecx+54],rbx
+mov rbx,[Math+18]
+mov [ecx+58],rbx
+pop rbx
+mov eax,[Math+1C]
+
+mov [Math+14],0
+mov [Math+18],0
+mov [Math+1C],0
+mov [timerGH],(float)0
+
+  mov [ecx+5C],eax
+  mov edi,[esi+04]
+  jmp return
+
+balls_reset:
+cmp [ecx+6C],(float)3.5
+jne code
+mov [ecx+6C],(float)2
+jmp code
+
+dkjsfhgksdjf:
+  jmp newmem
+  nop
+return:
+registersymbol(dkjsfhgksdjf)
+
+[DISABLE]
+
+dkjsfhgksdjf:
+  db 89 41 5C 8B 7E 04
+
+unregistersymbol(dkjsfhgksdjf)
+dealloc(newmem)
+dealloc(AutoDistance)
+dealloc(timerGH)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>793</ID>
+                  <Description>"Mob Hitbox Size Modifier (Use projectiles skills)"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(_ToggleHitBoxSize,08)
+registersymbol(_ToggleHitBoxSize)
+_ToggleHitBoxSize:
+dd #0
+
+alloc(_HitBoxSize,08)
+registersymbol(_HitBoxSize)
+_HitBoxSize:
+dd #0
+
+aobscanmodule(HitboxModifier,TERA.exe,F3 0F 10 98 E8 01 00 00 F3 0F 11) // should be unique
+alloc(newmem,$20)
+
+label(code)
+label(return)
+
+label(Toggle)
+label(ToggleON)
+label(ToggleOFF)
+
+label(normal)
+label(medium)
+label(large)
+
+label(reset)
+
+label(skip1)
+label(skip2)
+label(skip3)
+
+
+newmem:
+cmp [_ToggleHitBoxSize],#1
+je Toggle
+
+cmp [eax+000001E8],(float)21.5
+je code
+cmp [eax+000001EC],(float)10
+je code //people
+
+cmp [_HitBoxSize],#0
+je reset
+
+
+{//Auto blacklist if object is out of rendering zone
+//this check will (try to) prevent ladders being a priority.
+//doesn't work if the ladder has been loaded within 2500 units
+finit
+fld [_PlyX]
+fsub [eax+A0]
+fmul ST(0)
+fstp [Math]
+fld [_PlyY]
+fsub [eax+A8]
+fmul ST(0)
+fstp [Math+4]
+fld [_PlyZ]
+fsub [eax+A4]
+fmul ST(0)
+fstp [Math+8]
+fld [Math]
+fadd [Math+4]
+fadd [Math+8]
+fsqrt
+fstp [Math+10]
+
+finit
+mov [Math],(float)1500 //2000 should be max
+fld dword ptr [Math]
+fld dword ptr [Math+10]
+fcomi st(0),st(1)
+ja code //}
+
+cmp [eax+000001E8],(float)120
+je large
+cmp [eax+000001E8],(float)80
+je medium
+
+normal:
+push rbx
+mov rbx,(float)5021
+mov [eax+000001E8],rbx
+mov [eax+000001EC],rbx
+pop rbx
+jmp code
+
+medium:
+push rbx
+mov rbx,(float)5080
+mov [eax+000001E8],rbx
+mov [eax+000001EC],rbx
+pop rbx
+jmp code
+
+large:
+push rbx
+mov rbx,(float)5120
+mov [eax+000001E8],rbx
+mov [eax+000001EC],rbx
+pop rbx
+jmp code
+
+reset:
+cmp [eax+000001E8],(float)5021
+jne skip1
+mov [eax+000001E8],(float)21
+mov [eax+000001EC],(float)21
+jmp code
+skip1:
+cmp [eax+000001E8],(float)5080
+jne skip2
+mov [eax+000001E8],(float)80
+mov [eax+000001EC],(float)80
+jmp code
+skip2:
+cmp [eax+000001E8],(float)5120
+jne skip3
+mov [eax+000001E8],(float)120
+mov [eax+000001EC],(float)120
+jmp code
+skip3:
+jmp code
+
+code:
+  movss xmm3,[eax+000001E8]
+  jmp return
+
+Toggle:
+mov [_ToggleHitBoxSize],#0
+cmp [_HitBoxSize],#0
+je ToggleON
+jmp ToggleOFF
+ToggleON:
+mov [_HitBoxSize],#1
+jmp newmem
+ToggleOFF:
+mov [_HitBoxSize],#0
+jmp newmem
+
+HitboxModifier:
+  jmp newmem
+  nop
+  nop
+  nop
+return:
+registersymbol(HitboxModifier)
+
+[DISABLE]
+HitboxModifier:
+  db F3 0F 10 98 E8 01 00 00
+
+unregistersymbol(HitboxModifier)
+dealloc(newmem)
+
+dealloc(_HitBoxSize)
+unregistersymbol(_HitBoxSize)
+dealloc(_ToggleHitBoxSize)
+unregistersymbol(_ToggleHitBoxSize)
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>989</ID>
+                  <Description>"Player Hitbox Size Modifier (Use projectiles skills)"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(_ToggleHitBoxSize,08)
+registersymbol(_ToggleHitBoxSize)
+_ToggleHitBoxSize:
+dd #0
+
+alloc(_HitBoxSize,08)
+registersymbol(_HitBoxSize)
+_HitBoxSize:
+dd #0
+
+aobscanmodule(HitboxModifier,TERA.exe,F3 0F 10 98 E8 01 00 00 F3 0F 11) // should be unique
+alloc(newmem,$20)
+
+label(code)
+label(return)
+
+label(Toggle)
+label(ToggleON)
+label(ToggleOFF)
+
+label(normal)
+
+label(reset)
+
+
+newmem:
+cmp [_ToggleHitBoxSize],#1
+je Toggle
+cmp [_HitBoxSize],#0
+je reset
+cmp [eax+000001EC],(float)10
+je normal //people
+
+//cmp [eax+000001E8],(float)21.5
+//je code
+
+
+jmp code
+
+normal:
+push rbx
+mov rbx,(float)1000
+mov [eax+000001EC],rbx
+pop rbx
+jmp code
+
+
+reset:
+cmp [eax+000001EC],(float)1000
+jne code
+mov [eax+000001EC],(float)10
+jmp code
+
+code:
+  movss xmm3,[eax+000001E8]
+  jmp return
+
+Toggle:
+mov [_ToggleHitBoxSize],#0
+cmp [_HitBoxSize],#0
+je ToggleON
+jmp ToggleOFF
+ToggleON:
+mov [_HitBoxSize],#1
+jmp newmem
+ToggleOFF:
+mov [_HitBoxSize],#0
+jmp newmem
+
+HitboxModifier:
+  jmp newmem
+  nop
+  nop
+  nop
+return:
+registersymbol(HitboxModifier)
+
+[DISABLE]
+HitboxModifier:
+  db F3 0F 10 98 E8 01 00 00
+
+unregistersymbol(HitboxModifier)
+dealloc(newmem)
+
+dealloc(_HitBoxSize)
+unregistersymbol(_HitBoxSize)
+dealloc(_ToggleHitBoxSize)
+unregistersymbol(_ToggleHitBoxSize)
+</AssemblerScript>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1175</ID>
+              <Description>"Tools"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <Color>FF00FF</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>[ENABLE]
+
+
+[DISABLE]
+
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>145</Key>
+                  </Keys>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>1266</ID>
+                  <Description>"Auto Keys"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+createthread(KeyboardEvents)
+
+_ScriptEnabled:
+dd 0
+_Plugin:
+dd 0
+_Running:
+dd 0
+_InputKey:
+dd 0
+
+label(@1)
+label(@2)
+label(@3)
+label(@4)
+label(@5)
+label(@6)
+
+
+//label(ComeBack)
+
+KeyboardEvents:
+
+push #10 //Timer in ms (#1000 = 1 second)
+        //Do not set it lower than #5 cuz your game might crash lul
+call sleep
+
+
+cmp [_ScriptEnabled],#1
+jne KeyboardEvents
+cmp [GameFocus],#1
+jne KeyboardEvents
+cmp [_Running],#0
+jne KeyboardEvents
+cmp [_Running],#1
+je KeyboardEvents
+cmp [_Plugin],#0
+je KeyboardEvents
+
+cmp [_Plugin],#1
+je @1
+cmp [_Plugin],#2
+je @2
+cmp [_Plugin],#3
+je @3
+cmp [_Plugin],#4
+je @4
+cmp [_Plugin],#5
+je @5
+cmp [_Plugin],#6
+je @6
+
+jmp KeyboardEvents
+
+//ComeBack:
+mov [_Running],#0
+jmp KeyboardEvents
+
+////////////////// Anti-afk
+@1:
+mov [_Running],#1
+  pushad
+  push 0
+  push 0                // (Key up or down)
+  push 0
+  push #65       // (Key)
+  call keybd_event
+
+  push #5
+  call sleep
+
+  push 0
+  push 2
+  push 0
+  push #65
+  call keybd_event
+
+  push #1000
+  call sleep
+
+  push 0
+  push 0                // (Key up or down)
+  push 0
+  push #68       // (Key)
+  call keybd_event
+
+  push #5
+  call sleep
+
+  push 0
+  push 2
+  push 0
+  push #68
+  call keybd_event
+  popad
+mov [_Running],#0
+jmp KeyboardEvents
+
+////////////////// Bunnyhop
+@2:
+mov [_Running],#1
+  pushad
+  push 0
+  push 2                // (Key up or down)
+  push 0
+  push #32       // (Key)
+  call keybd_event
+  push #50
+  call sleep
+  popad
+mov [_Running],#0
+jmp KeyboardEvents
+
+////////////////// Custom key
+@3:
+cmp [_InputKey],#0
+je KeyboardEvents
+mov [_Running],#1
+  pushad
+  push 0
+  push 0                // (Key up or down)
+  push 0
+  push [_InputKey]      // (Key)
+  call keybd_event
+
+  push #1000
+  call sleep
+
+  push 0
+  push 2                // (Key up or down)
+  push 0
+  push [_InputKey]      // (Key)
+  call keybd_event
+  popad
+mov [_Running],#0
+jmp KeyboardEvents
+
+////////////////// Gather
+@4:
+cmp [IsGathering],#1
+je KeyboardEvents
+cmp [inCombat],#1
+je KeyboardEvents
+cmp [IsPlayerAutoMoving],#1
+je KeyboardEvents
+
+pushad
+
+  push 0
+  push 2                // (Key up or down)
+  push 0
+  push #70      // (Key)
+  call keybd_event
+
+  push #250
+  call sleep
+
+  push 0
+  push 0                // (Key up or down)
+  push 0
+  push #70      // (Key)
+  call keybd_event
+
+  push #250
+  call sleep
+
+  push 0
+  push 2                // (Key up or down)
+  push 0
+  push #70      // (Key)
+  call keybd_event
+
+  push #250
+  call sleep
+popad
+jmp KeyboardEvents
+
+////////////////// Auto-Fish
+@5:
+mov [_Running],#1
+label(UseRod)
+label(DoNotUseRod)
+cmp [IsFishing],#1
+je DoNotUseRod
+cmp [IsFishing],#0
+je UseRod
+
+DoNotUseRod:
+  pushad
+  push 0
+  push 0                // (Key down)
+  push 0
+  push #70      // (F Key)
+  call keybd_event
+
+  push #100
+  call sleep
+
+  push 0
+  push 2                // (Key up)
+  push 0
+  push #70      // (F Key)
+  call keybd_event
+  popad
+
+  push #1000
+  call sleep
+
+  mov [_Running],#0
+jmp KeyboardEvents
+
+UseRod:
+  pushad
+  push 0
+  push 0                // (Key down)
+  push 0
+  push #67      // (C Key)
+  call keybd_event
+
+  push #1500
+  call sleep
+
+  push 0
+  push 2                // (Key up)
+  push 0
+  push #67      // (C Key)
+  call keybd_event
+  popad
+
+  push #1000
+  call sleep
+
+mov [_Running],#0
+jmp KeyboardEvents
+
+////////////////// Auto-Clicker
+@6:
+  pushad
+push 0
+push 0
+push 0
+push 0
+push MOUSEEVENTF_LEFTDOWN
+call mouse_event
+
+  push #3
+  call sleep
+
+push 0
+push 0
+push 0
+push 0
+push MOUSEEVENTF_LEFTUP
+call mouse_event
+  popad
+mov [_Running],#0
+jmp KeyboardEvents
+
+//End of script
+jmp KeyboardEvents
+ret
+[DISABLE]
+KeyboardEvents:
+ret
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1284</ID>
+                      <Description>"Plugin"</Description>
+                      <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:&lt;Unselected&gt;
+1:Anti-AFK
+2:Bunny Hop
+3:Custom
+4:Auto F (Gathering)
+5:Auto F (Fishing)
+6:Auto clicker
+</DropDownList>
+                      <LastState Value="0" RealAddress="0E6E1008"/>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>_Plugin</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1285</ID>
+                      <Description>"Custom Key"</Description>
+                      <LastState Value="0" RealAddress="0E6E1024"/>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>_InputKey</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>958</ID>
+                  <Description>"Change sitting animation with"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+alloc(_AnimSet,08)
+registersymbol(_AnimSet)
+_AnimSet:
+dd #42
+
+aobscanmodule(AnimHijack,TERA.exe,6A 00 6A 26 8D 4D F0) // should be unique
+alloc(newmem,$30)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  push 00
+  push [_AnimSet]
+  lea ecx,[ebp-10]
+  jmp return
+
+AnimHijack:
+  jmp newmem
+  nop 2
+return:
+registersymbol(AnimHijack)
+
+[DISABLE]
+
+AnimHijack:
+  db 6A 00 6A 26 8D 4D F0
+unregistersymbol(AnimHijack)
+dealloc(newmem)
+
+unregistersymbol(_AnimSet)
+dealloc(_AnimSet)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>959</ID>
+                      <Description>""</Description>
+                      <DropDownList ReadOnly="1" DisplayValueAsItem="1">11:Craft_energy
+12:Craft_metal
+13:Craft_sew
+14:fund
+15:unarmedwait
+16:greet
+17:bow
+18:sob
+19:smile
+20:victory
+21:dance
+22:taunt
+23:applaud
+24:request
+25:worry
+26:propose
+27:attack
+28:pointing
+29:shy
+30:angry
+31:idle1
+32:idle2
+33:idle3
+34:talk1
+35:talk2
+36:talk3
+37:Craft_energy
+39:sitEnd
+40:R01idle01
+41:R01idle02
+42:R01talk
+</DropDownList>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>_AnimSet</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1029</ID>
+                  <Description>"God mode (99% of the time you are invulnerable)"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(sdadsdsdsa,TERA.exe,D9 41 04 D9 58 04 D9 41 08 8D 4D D4 D9 58 08 E8) // should be unique
+alloc(newmem,$50)
+
+label(code)
+label(return)
+label(horse)
+
+newmem:
+
+code:
+cmp [_OnFoot],#1
+jne horse
+
+push rbx
+mov rbx,[Yplus]
+mov [ecx+08],rbx
+pop rbx
+
+horse:
+  fld dword ptr [ecx+04]
+  fstp dword ptr [eax+04]
+  jmp return
+
+sdadsdsdsa:
+  jmp newmem
+  nop
+return:
+registersymbol(sdadsdsdsa)
+////////////////////
+aobscanmodule(fgfdgdsfgfdsa,TERA.exe,F3 0F 10 40 08 F3 0F 11 45 D8 F3 0F 10 46) // should be unique
+alloc(newmemfgfdgdsfgfdsa,$20)
+
+label(codefgfdgdsfgfdsa)
+label(returnfgfdgdsfgfdsa)
+
+newmemfgfdgdsfgfdsa:
+
+codefgfdgdsfgfdsa:
+  movss xmm0,[_PlyY]
+  jmp returnfgfdgdsfgfdsa
+
+fgfdgdsfgfdsa:
+  jmp newmemfgfdgdsfgfdsa
+returnfgfdgdsfgfdsa:
+registersymbol(fgfdgdsfgfdsa)
+////////////////////
+aobscanmodule(extragod,TERA.exe,0F 84 0E 04 00 00 8B 45) // should be unique
+registersymbol(extragod)
+extragod:
+  db 90 90 90 90 90 90
+
+[DISABLE]
+
+sdadsdsdsa:
+  db D9 41 04 D9 58 04
+unregistersymbol(sdadsdsdsa)
+dealloc(newmem)
+////////////////////
+fgfdgdsfgfdsa:
+  db F3 0F 10 40 08
+unregistersymbol(fgfdgdsfgfdsa)
+dealloc(newmemfgfdgdsfgfdsa)
+////////////////////
+extragod:
+  db 0F 84 0E 04 00 00
+unregistersymbol(extragod)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1211</ID>
+                      <Description>"distance from the ground"</Description>
+                      <DropDownList DisplayValueAsItem="1">100:In case you are getting stuck (Rare bug)
+120:Default
+160:Increased height
+200:If big bosses are present
+</DropDownList>
+                      <LastState Value="120" RealAddress="0E6E0080"/>
+                      <VariableType>Float</VariableType>
+                      <Address>Distance</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1439</ID>
+                  <Description>"Gathering Bot"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+//old scan: aobscanmodule(AirWalk,TERA.exe,75 xx 83 xx xx xx 75 xx B8 xxxxxxxx C3  33 xx  C3  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  8B xx  25 xxxxxxxx 83 xx xx 74 xx B8 xxxxxxxx C3  33 xx  C3  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  CC  56  8B xx xx  33 xx  85 xx  7E xx 8B xx xx  83 xx xx 8B xx  0B xx xx  74 xx 42  83 xx xx 3B xx  7C xx B8)
+aobscanmodule(AirWalk,TERA.exe,C4 FF 5E 83 78 24 00 75 0C)
+AirWalk+7:
+  db EB
+registersymbol(AirWalk)
+
+//alt: D8 EB 57 C7 45 BC 00 00 40 40
+aobscanmodule(GatherPrecision,TERA.exe,D8 EB 57 C7 45 BC 00 00 40 40 C7 45 08 00 00 00 3F F3 0F 10 4D AC)
+registersymbol(GatherPrecision) //specific coord
+GatherPrecision+16:
+  db 90 90 90 90
+
+aobscanmodule(ANTIFAIL,TERA.exe,8B ??  85 ??  0F84 ???????? 83 ?? ?? ?? C7 ?? ???????? ???????? C7 ?? ???????? ???????? C7 ?? ???????? ???????? 0F85 ???????? 8D ?? ??  8B ??  50  E8 ???????)
+registersymbol(ANTIFAIL) //camera
+ANTIFAIL:
+  db 8B D8 85 DB 0F 85 //}
+
+aobscanmodule(jsdfhkjhgfkdsks,TERA.exe,F3 0F 10 48 08 0F 2F D9 76) // falling
+registersymbol(jsdfhkjhgfkdsks)
+jsdfhkjhgfkdsks:
+  db 90 90 90 90 90
+
+unregistersymbol(jsdfhkjhgfkdsks)
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+alloc(OnSpot,8)
+registersymbol(OnSpot)
+OnSpot:
+dd #0
+alloc(FixedHeight,8)
+registersymbol(FixedHeight)
+FixedHeight:
+dd (float)0
+alloc(TheYspot,8)
+registersymbol(TheYspot)
+TheYspot:
+dd (float)0
+
+aobscanmodule(GatheringMovement,TERA.exe,A3 3C 86 9E 02) // should be unique
+registersymbol(GatheringMovement)
+alloc(newmem,$100)
+
+label(code)
+label(return)
+label(Yes)
+label(No)
+label(checkAlphaCombat)
+
+newmem:
+cmp [FixedHeight],0
+je code
+cmp [IsGathering],#1
+je code
+
+
+cmp [inCombat],#0
+je checkAlphaCombat
+finit
+fld dword ptr [_PlyX]
+fstp dword ptr [AutoMoveGoto+00]
+fld dword ptr [_PlyY]
+fstp dword ptr [AutoMoveGoto+08]
+fld dword ptr [_PlyZ]
+fstp dword ptr [AutoMoveGoto+04]
+checkAlphaCombat:
+
+cmp [OnSpot],#1
+jge Yes
+cmp [OnSpot],#0
+je No
+
+
+code:
+  readmem(PlayerY,5)
+  jmp return
+
+Yes:
+mov eax,[TheYspot]
+jmp code
+
+No:
+mov eax,[FixedHeight]
+jmp code
+
+GatheringMovement:
+  jmp newmem
+return:
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+alloc(isStuck,08)
+isStuck:
+dd #0
+
+
+// sig: F3 ???? ?? ??  F3 ???? ?? ??  0F28 ??  F3 ???? ?? ??  F3 ???? ??  F3 ???? ?? ??  F3 ???? ??  56  8B ?? ??  F3 ???? ?? ??  0F28 ??  8B ?? ??  F3 ???? ??  89 ??  F3 ???? ??  89 ?? ??  C6 ?? ?? 01
+aobscanmodule(GatherMod,TERA.exe,F3 0F 10 51 10 F3 0F 10 69 04)
+alloc(newmem_gathejkdhfsd,$100)
+
+label(code_gathejkdhfsd)
+label(return__gathejkdhfsd)
+label(blacklist__gathejkdhfsd)
+
+newmem_gathejkdhfsd:
+
+//Auto blacklist, helps lowering cpu usage
+finit
+mov [Math],(float)101
+fld dword ptr [Math]
+fld dword ptr [ecx+10]
+fcomi st(0),st(1)
+je blacklist__gathejkdhfsd
+finit
+mov [Math],(float)101
+fld dword ptr [Math]
+fld dword ptr [ecx+14]
+fcomi st(0),st(1)
+je blacklist__gathejkdhfsd
+
+//Reset stuck check
+label(resetStuckCheck)
+label(skipStuckCheck)
+cmp [IsGathering],#1
+je resetStuckCheck
+cmp [IsPlayerAutoMoving],#1
+je resetStuckCheck
+jmp skipStuckCheck
+resetStuckCheck:
+mov [isStuck],#0
+skipStuckCheck:
+
+//Auto blacklist if object is out of rendering zone
+//this check will (try to) prevent ladders being a priority.
+//doesn't work if the ladder has been loaded within 2500 units
+finit
+fld [_PlyX]
+fsub [ecx+04]
+fmul ST(0)
+fstp [Math]
+fld [_PlyY]
+fsub [ecx+0C]
+fmul ST(0)
+fstp [Math+4]
+fld [_PlyZ]
+fsub [ecx+08]
+fmul ST(0)
+fstp [Math+8]
+fld [Math]
+fadd [Math+4]
+fadd [Math+8]
+fsqrt
+fstp [Math+10]
+
+finit
+mov [Math],(float)2500 //2000 should be max, but 2500 is ok
+fld dword ptr [Math]
+fld dword ptr [Math+10]
+fcomi st(0),st(1)
+ja blacklist__gathejkdhfsd
+
+//Auto fixed height
+label(AutoHeight)
+cmp [FixedHeight],(float)0
+jne AutoHeight
+finit
+mov [Math],(float)100  // &lt;------------  FIXED HEIGHT adder
+fld dword ptr [Math]
+fld dword ptr [_PlyY]
+faddp st(1),st(0)
+fstp [FixedHeight]
+AutoHeight:
+
+//Ladder spots
+cmp [ecx+04],(float)-36071.00391
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-35994.23047
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-32545.88477
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-39622.41016
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-43420.30078
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-23538.27344
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-63586.59375
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)70447.75 //SM
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)70112.23438 //SM
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-36736.17188 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-36003.12109 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-40883.61719 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-46497.43359 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-45269.02344 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-43342.53125 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-50512.07031 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-56296.48828 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-32951.08594 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-23268.65039 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-21179.74414 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-27905.4375 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-29887.8125 //Frontera
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-13864.94922 //Bastion
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-9935.421875 //Bastion
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-23869.94922 //Frontera (underground)
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-23538.27344 //Frontera (underground)
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-20434.50781 //Frontera (underground)
+je blacklist__gathejkdhfsd
+
+cmp [ecx+04],(float)22302.28906 //Highwatch
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)34725.95703 //Highwatch
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)41075.22266 //Highwatch
+je blacklist__gathejkdhfsd
+
+cmp [ecx+04],(float)73032.57812 //IOD
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)56884.88672 //IOD
+je blacklist__gathejkdhfsd
+
+cmp [ecx+04],(float)-26873.20117 //Pora Elinu
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-26915.89648 //Pora Elinu
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-35755.10547 //Pora Elinu
+je blacklist__gathejkdhfsd
+
+cmp [ecx+04],(float)48673.17188 //Tria
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)48600.09375 //Tria
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)48593.73047 //Tria
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)40633.13281 //Tria
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)40957.42969 //Tria
+je blacklist__gathejkdhfsd
+
+//Desert near chekiba
+cmp [ecx+04],(float)-35997.03125
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-35998.35547
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-36543.27734
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-36578.58984
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-36543.27734
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-51838.28125
+je blacklist__gathejkdhfsd
+
+//Pathfinder post
+cmp [ecx+04],(float)19943.58984
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)20244.86914
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)20080.5625
+je blacklist__gathejkdhfsd
+
+//Val Kaeli
+cmp [ecx+04],(float)61793.74219
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-63013.17188
+je blacklist__gathejkdhfsd
+
+//Kaiator
+cmp [ecx+04],(float)-4721.716797
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)1598.487793
+je blacklist__gathejkdhfsd
+
+
+
+
+//Objects (Might aswell delete this)
+cmp [ecx+04],(float)-33362.03125
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-33771.51172
+je blacklist__gathejkdhfsd
+cmp [ecx+04],(float)-33207.24609
+je blacklist__gathejkdhfsd
+
+//Ignore unreachable objects (higher than FixedHeigh)
+label(AutoHeight2)
+cmp [FixedHeight],(float)0
+je AutoHeight2
+finit
+fld dword ptr [ecx+0C]
+fld dword ptr [FixedHeight]
+fcomi st(0),st(1)
+jb code_gathejkdhfsd //use code_gathejkdhfsd if you don't want to mark them as danger zone
+AutoHeight2:
+
+mov [ecx+10],(float)90000
+mov [ecx+14],(float)90000
+  movss xmm2,[ecx+10]
+  movss xmm5,[ecx+04]
+
+
+label(OnSpotYes)
+label(OnSpotNo)
+label(Prevent)
+
+
+finit
+fld dword [_PlyX]
+fld dword [ecx+04]
+fsubp st(1),st(0)
+fstp [Math]
+finit
+fld dword [Math]
+fabs
+fstp dword [Math]
+finit
+mov [Math+04],(float)5
+fld [Math]
+fld [Math+04]
+fcomi st(0),st(1)
+jb OnSpotNo
+
+finit
+fld dword [_PlyZ]
+fld dword [ecx+08]
+fsubp st(1),st(0)
+fstp [Math]
+finit
+fld dword [Math]
+fabs
+fstp dword [Math]
+finit
+mov [Math+04],(float)5
+fld [Math]
+fld [Math+04]
+fcomi st(0),st(1)
+jb OnSpotNo
+
+//Check if the player is in combat and if so go to the next gatherable entity
+label(NoDanger)
+cmp [inCombat],#0
+je NoDanger
+jmp code_gathejkdhfsd
+NoDanger:
+
+//Check if the player is stuck
+//At this point the player is:
+//Not in combat
+//On spot
+label(ImGathering)
+cmp [IsGathering],#1
+je ImGathering
+inc [isStuck]
+cmp [isStuck],#400
+jg blacklist__gathejkdhfsd
+ImGathering:
+
+
+OnSpotYes:
+mov edx,[ecx+0C]
+mov [TheYspot],edx
+mov [OnSpot],#70
+jmp return__gathejkdhfsd
+
+
+OnSpotNo:
+cmp [OnSpot],#0
+je Prevent
+dec [OnSpot]
+Prevent:
+jmp return__gathejkdhfsd
+
+
+blacklist__gathejkdhfsd:
+mov [ecx+10],(float)101
+mov [ecx+14],(float)101
+  movss xmm2,[ecx+10]
+  movss xmm5,[ecx+04]
+  jmp return__gathejkdhfsd
+
+code_gathejkdhfsd:
+mov [ecx+10],(float)100
+mov [ecx+14],(float)100
+  movss xmm2,[ecx+10]
+  movss xmm5,[ecx+04]
+  jmp return__gathejkdhfsd
+
+GatherMod:
+  jmp newmem_gathejkdhfsd
+return__gathejkdhfsd:
+registersymbol(GatherMod)
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+[DISABLE]
+
+GatheringMovement:
+  db A3 3C 86 9E 02
+unregistersymbol(GatheringMovement)
+dealloc(newmem)
+dealloc(OnSpot)
+unregistersymbol(OnSpot)
+dealloc(TheYspot)
+unregistersymbol(FixedHeight)
+dealloc(TheYspot)
+unregistersymbol(TheYspot)
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+GatherMod:
+  db F3 0F 10 51 10
+unregistersymbol(GatherMod)
+dealloc(newmem_gathejkdhfsd)
+dealloc(isStuck)
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+GatherPrecision+16:
+  db F3 0F 52 C1
+unregistersymbol(GatherPrecision)
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+ANTIFAIL:
+  db 8B D8 85 DB 0F 84
+unregistersymbol(ANTIFAIL)
+////////////////////////////////////////////////////////////////////////////////
+AirWalk+7:
+  db 75
+unregistersymbol(AirWalk) //}
+////////////////////////////////////////////////////////////////////////////////
+jsdfhkjhgfkdsks:
+  db F3 0F 10 48 08
+unregistersymbol(jsdfhkjhgfkdsks)
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1582</ID>
+                      <Description>"FixedHeight"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>FixedHeight</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1810</ID>
+                  <Description>"Enable (Outdated) GM Tool"</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>[ENABLE]
+
+aobscanmodule(EnableGMTool,TERA.exe,89 5D EC 39 9F B0 00 00 00) // should be unique
+alloc(newmem,$40)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  mov [ebp-14],ebx
+  cmp [edi+000000B0],ebx
+  jmp EnableGMTool+F
+  jmp return
+
+EnableGMTool:
+  jmp newmem
+  nop 4
+return:
+registersymbol(EnableGMTool)
+
+[DISABLE]
+
+EnableGMTool:
+  db 89 5D EC 39 9F B0 00 00 00
+
+unregistersymbol(EnableGMTool)
+dealloc(newmem)
+
+</AssemblerScript>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>994</ID>
+          <Description>"Hotkeys"</Description>
+          <Options moHideChildren="1"/>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>993</ID>
+              <Description>"Teleport Hotkey"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>EnabledPoint</Address>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>36</Key>
+                  </Keys>
+                  <Value>1</Value>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1282</ID>
+              <Description>"Toggle AutoKeys"</Description>
+              <DropDownList ReadOnly="1" DisplayValueAsItem="1">0:Off
+1:On
+</DropDownList>
+              <LastState Value="0" RealAddress="0E6E1000"/>
+              <VariableType>4 Bytes</VariableType>
+              <Address>_ScriptEnabled</Address>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>104</Key>
+                  </Keys>
+                  <Value>1</Value>
+                  <ID>0</ID>
+                </Hotkey>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>101</Key>
+                  </Keys>
+                  <Value>0</Value>
+                  <ID>1</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>794</ID>
+              <Description>"Toggle Hitbox Size "</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>_ToggleHitBoxSize</Address>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Set Value</Action>
+                  <Keys>
+                    <Key>33</Key>
+                  </Keys>
+                  <Value>1</Value>
+                  <ID>0</ID>
+                </Hotkey>
+              </Hotkeys>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>1535</ID>
+      <Description>"World Data Editor 2"</Description>
+      <Options moHideChildren="1"/>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>800000</Color>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>1536</ID>
+          <Description>".[ENABLE EDITOR]"</Description>
+          <LastState/>
+          <Color>0000FF</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[ENABLE]
+aobscan(WorldData,00 00 16 C4 00 00 5C 42 00 00 C8 43 E8 D5 12 3F 00 40 1C C4 00 00 A0 42 00 00 7A 43 00 00 48 42 CD)
+label(structureWD)
+registersymbol(structureWD)
+
+WorldData:
+structureWD:
+
+[DISABLE]
+structureWD:
+dd (float)-600
+structureWD+24:
+dd (float)100
+structureWD+14:
+dd (float)80
+structureWD+18:
+dd (float)250
+structureWD+1C:
+dd (float)50
+structureWD+34:
+dd (float)500
+structureWD+30:
+dd (float)150
+structureWD+C:
+dd (float)0.5735764503
+structureWD+20:
+dd (float)0.8
+
+unregistersymbol(structureWD)
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1557</ID>
+          <Description>"Gravity"</Description>
+          <DropDownList DisplayValueAsItem="1">-600:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>-600</Value>
+              <ID>0</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>99</Key>
+              </Keys>
+              <Value>0</Value>
+              <ID>1</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>98</Key>
+              </Keys>
+              <Value>-600</Value>
+              <ID>2</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1566</ID>
+          <Description>"Climb Check"</Description>
+          <DropDownList DisplayValueAsItem="1">100:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD+24</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>100</Value>
+              <ID>0</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>98</Key>
+              </Keys>
+              <Value>0</Value>
+              <ID>1</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1569</ID>
+          <Description>"Fall Recovery"</Description>
+          <DropDownList DisplayValueAsItem="1">80:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD+14</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>80</Value>
+              <ID>0</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>98</Key>
+              </Keys>
+              <Value>+Inf</Value>
+              <ID>1</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1563</ID>
+          <Description>"Jump Height"</Description>
+          <DropDownList DisplayValueAsItem="1">250:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD+18</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>250</Value>
+              <ID>0</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1564</ID>
+          <Description>"Landing"</Description>
+          <DropDownList DisplayValueAsItem="1">50:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD-4</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>50</Value>
+              <ID>0</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>98</Key>
+              </Keys>
+              <Value>450</Value>
+              <ID>1</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>99</Key>
+              </Keys>
+              <Value>0</Value>
+              <ID>2</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1567</ID>
+          <Description>"Max Follow distance"</Description>
+          <DropDownList DisplayValueAsItem="1">500:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD+34</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>500</Value>
+              <ID>0</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>98</Key>
+              </Keys>
+              <Value>+Inf</Value>
+              <ID>1</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1568</ID>
+          <Description>"Min Follow distance"</Description>
+          <DropDownList DisplayValueAsItem="1">110:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD+30</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>110</Value>
+              <ID>0</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>98</Key>
+              </Keys>
+              <Value>0</Value>
+              <ID>1</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1560</ID>
+          <Description>"Sliding"</Description>
+          <DropDownList DisplayValueAsItem="1">0.5735764503:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD+C</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>0.5735764503</Value>
+              <ID>0</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>98</Key>
+              </Keys>
+              <Value>-Inf</Value>
+              <ID>1</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1565</ID>
+          <Description>"Animation duration"</Description>
+          <DropDownList DisplayValueAsItem="1">0.8000000119:Default
+</DropDownList>
+          <VariableType>Float</VariableType>
+          <Address>structureWD+20</Address>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Set Value</Action>
+              <Keys>
+                <Key>97</Key>
+              </Keys>
+              <Value>0.8</Value>
+              <ID>0</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols>
+    <SymbolEntry>
+      <Name>_preset</Name>
+      <Address>0E820000</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>FindData</Name>
+      <Address>0E820010</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>ThisTestMem</Name>
+      <Address>15EB0000</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>KeyboardHijack</Name>
+      <Address>0DC60000</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>BunnyHop</Name>
+      <Address>40E803F0</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>Globalmemory</Name>
+      <Address>0E6E0000</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>NoBypass</Name>
+      <Address>2DC50000</Address>
+    </SymbolEntry>
+  </UserdefinedSymbols>
+</CheatTable>
